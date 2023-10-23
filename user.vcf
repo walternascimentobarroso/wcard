@@ -1,0 +1,14 @@
+BEGIN:VCARD
+VERSION:3.0
+PRODID:-//Apple Inc.//iPhone OS 11.2.2//EN
+N:Lim;test;;;
+FN: test  Lim 
+ORG:GovTech;
+TITLE:Associate Software Engineer\nProducts Team, Data Science Division
+EMAIL;type=INTERNET;type=WORK;type=pref:test@data.com
+TEL;type=WORK;type=VOICE:+65 9123 4567
+item1.ADR;type=WORK;type=pref:;;1 local View\nSandcrawler\, xx-xx;;;88888;Nowhere
+item1.X-ABADR:sg
+item2.URL;type=pref:tech.com
+item2.X-ABLabel:_$!<HomePage>!$_
+END:VCARD
