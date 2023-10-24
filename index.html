@@ -9,11 +9,12 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
+    <title>WCard</title>
   </head>
 
   <body>
-    <section class="bg-gray-100 h-52">
-      <div class="container mx-auto h-full flex items-center justify-center">
+    <header class="bg-gray-100 h-52">
+      <div class="mx-auto h-full flex items-center justify-center">
         <div class="w-1/3 flex items-center justify-center">
           <img
             class="rounded-full w-full h-full object-cover sm:w-1/4 sm:h-1/4"
@@ -22,45 +23,51 @@
           />
         </div>
       </div>
-    </section>
+    </header>
 
-    <section class="bg-white h-15">
-      <div class="container mx-auto h-full">
-        <div class="flex items-center justify-center h-full">
-          <div class="w-full">
-            <p class="font-bold text-lg text-gray-800">John Due</p>
-            <p class="text-sm text-gray-600">Associate Software Engineer</p>
-            <p class="text-sm text-gray-600">Data Science Division, GovTech</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="bg-white h-8">
-      <a href="mailto:jhondue@mail.com">
-        <div class="container mx-auto h-full flex items-center">
-          <div class="w-1/12">
-            <div
-              class="w-7 h-7 bg-purple-600 rounded-full flex items-center justify-center"
-            >
-              <span class="text-white text-sm"
-                ><i class="fa-solid fa-envelope"></i
-              ></span>
+    <main>
+      <section class="bg-white">
+        <div class="mx-auto h-full">
+          <div class="flex items-center justify-center h-full">
+            <div class="w-full">
+              <p class="font-bold text-lg text-gray-800 profile-name">
+                John Due
+              </p>
+              <p class="text-sm text-gray-600 job-title">
+                Associate Software Engineer
+              </p>
+              <p class="text-sm text-gray-600 company">
+                Data Science Division, GovTech
+              </p>
             </div>
           </div>
-          <div class="w-8/12">
-            <p class="text-sm text-gray-600">jhondue@mail.com</p>
-          </div>
+        </div>
+      </section>
+
+      <section class="bg-white">
+        <div class="mx-auto h-full flex items-center">
+          <a class="email-link" href="mailto:jhondue@mail.com">
+            <div class="w-1/12">
+              <div
+                class="w-7 h-7 bg-purple-600 rounded-full flex items-center justify-center"
+              >
+                <span class="text-white text-sm"
+                  ><i class="fa-solid fa-envelope"></i
+                ></span>
+              </div>
+            </div>
+            <div class="w-8/12">
+              <p class="text-sm text-gray-600 email">jhondue@mail.com</p>
+            </div>
+          </a>
           <div class="w-1/12">
             <i class="fa-regular fa-copy"></i>
           </div>
         </div>
-      </a>
-    </section>
+      </section>
 
-    <section class="bg-white h-8">
-      <a href="tel:+6591234567">
-        <div class="container mx-auto h-full flex items-center">
+      <section class="bg-white">
+        <div class="mx-auto h-full flex items-center">
           <div class="w-1/12">
             <div
               class="w-7 h-7 bg-purple-600 rounded-full flex items-center justify-center"
@@ -71,18 +78,20 @@
             </div>
           </div>
           <div class="w-8/12">
-            <p class="text-sm text-gray-600">(+65) 9123 4567</p>
+            <p class="text-sm text-gray-600 phone">
+              <a class="phone-link" href="tel:(+65) 9123 4567"
+                >(+65) 9123 4567</a
+              >
+            </p>
           </div>
           <div class="w-1/12">
             <i class="fa-regular fa-copy"></i>
           </div>
         </div>
-      </a>
-    </section>
+      </section>
 
-    <section class="bg-white h-8">
-      <a href="https://www.tech.com" target="_blank" rel="noopener noreferrer">
-        <div class="container mx-auto h-full flex items-center">
+      <section class="bg-white">
+        <div class="mx-auto h-full flex items-center">
           <div class="w-1/12">
             <div
               class="w-7 h-7 bg-purple-600 rounded-full flex items-center justify-center"
@@ -93,22 +102,24 @@
             </div>
           </div>
           <div class="w-8/12">
-            <p class="text-sm text-gray-600">tech.com</p>
+            <p class="text-sm text-gray-600 website">
+              <a
+                class="website-link"
+                href="https://www.tech.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                >tech.com</a
+              >
+            </p>
           </div>
           <div class="w-1/12">
             <i class="fa-regular fa-copy"></i>
           </div>
         </div>
-      </a>
-    </section>
+      </section>
 
-    <section class="bg-white h-8">
-      <a
-        href="https://www.google.com/maps/place/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <div class="container mx-auto h-full flex items-center">
+      <section class="bg-white">
+        <div class="mx-auto h-full flex items-center">
           <div
             class="w-7 h-7 bg-purple-600 rounded-full flex items-center justify-center"
           >
@@ -117,7 +128,7 @@
             ></span>
           </div>
           <div class="w-8/12">
-            <p class="text-sm text-gray-600">
+            <p class="text-sm text-gray-600 address">
               1 No place, Somewhere, #19-11, 99999
             </p>
           </div>
@@ -125,12 +136,12 @@
             <i class="fa-regular fa-copy"></i>
           </div>
         </div>
-      </a>
-    </section>
+      </section>
+    </main>
 
-    <section class="bg-white h-23">
-      <div class="container mx-auto h-full flex justify-center">
-        <div class="w-5/12 flex justify-center">
+    <footer class="bg-white">
+      <div class="mx-auto h-full flex justify-center">
+        <div class="flex justify-center">
           <a href="user.vcf" download>
             <button
               class="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium py-2 px-4 rounded"
@@ -140,11 +151,12 @@
           </a>
         </div>
       </div>
-    </section>
+    </footer>
 
     <script
       src="https://kit.fontawesome.com/7f745c41fa.js"
       crossorigin="anonymous"
     ></script>
+    <script src="script.js"></script>
   </body>
 </html>
