@@ -1,11 +1,34 @@
 {
   "profile": {
     "name": "John Duex",
-    "jobTitle": "Associate Software Engineerx",
+    "picture": "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+    "colorFrom": "#243c5a",
+    "colorTo": "#2ffc5a",
     "company": "Data Science Division, GovTechx"
   },
-  "email": "jhondue@mail.coms",
-  "phone": "(+55) 9999 9999",
-  "website": "https://www.tech.com",
-  "address": "1 No place, Somewhere, #19-11, 99999"
+  "publicFields": [
+    {
+      "type": "email",
+      "icon": "fa-envelope",
+      "text": "jhondue@mail.com",
+      "url": "mailto:jhondue@mail.com"
+    },
+    {
+      "type": "phone",
+      "icon": "fa-phone",
+      "text": "(+65) 9123 4567",
+      "url": "tel:(+65) 9123 4567"
+    },
+    {
+      "type": "website",
+      "icon": "fa-globe",
+      "text": "tech.com",
+      "url": "https://www.tech.com"
+    },
+    {
+      "type": "address",
+      "icon": "fa-location-dot",
+      "text": "1 No place, Somewhere, #19-11, 99999"
+    }
+  ]
 }
