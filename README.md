@@ -21,3 +21,7 @@ git flow feature finish new-feature
 ```
 
 </details>
+
+***
+
+Made with &nbsp;❤️&nbsp;
