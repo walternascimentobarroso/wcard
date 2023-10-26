@@ -1,4 +1,5 @@
 # WCard
+Card to share data simply and safely
 
 <details open>
 <summary><h2> :octocat: GitFlow </h2></summary>
