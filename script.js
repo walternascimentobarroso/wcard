@@ -1,13 +1,41 @@
-document.addEventListener("DOMContentLoaded", () => loadData());
+document.addEventListener("DOMContentLoaded", () => main());
+
+function main() {
+  loadData();
+  tabs();
+}
+
+function tabs() {
+  const tabPublic = document.querySelector("#tabPublic");
+  const tabPrivate = document.querySelector("#tabPrivate");
+  const contentPublic = document.querySelector("#public");
+  const contentPrivate = document.querySelector("#private");
+
+  tabPublic.addEventListener("click", () =>
+    toggleTab(contentPublic, contentPrivate, tabPublic, tabPrivate)
+  );
+
+  tabPrivate.addEventListener("click", () =>
+    toggleTab(contentPrivate, contentPublic, tabPrivate, tabPublic)
+  );
+
+  function toggleTab(contentShow, contentHidden, tabShow, tabHidden) {
+    contentShow.classList.remove("hidden");
+    contentHidden.classList.add("hidden");
+    tabShow.classList.add("active");
+    tabHidden.classList.remove("active");
+  }
+}
 
 function loadData() {
   fetch("data.json")
     .then((response) => response.json())
-    .then(({ profile, publicFields }) => {
+    .then(({ profile, publicFields, privateFields }) => {
       // Update the profile
       updateHeader(profile);
       // Add Sections
-      addSectionsToDOM(publicFields);
+      addSectionsToDOM("#public .bg-white", publicFields);
+      addSectionsToDOM("#private .bg-white", privateFields);
     })
     .catch((error) => console.error("Error:", error));
 }
@@ -50,8 +78,8 @@ function createSection(data) {
     </section>`;
 }
 
-function addSectionsToDOM(sectionsData) {
-  const main = document.querySelector("main");
+function addSectionsToDOM(element, sectionsData) {
+  const main = document.querySelector(element);
   sectionsData.forEach((data) => {
     main.insertAdjacentHTML("beforeend", createSection(data));
   });
