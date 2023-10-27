@@ -30,14 +30,26 @@ function tabs() {
 function loadData() {
   fetch("data.json")
     .then((response) => response.json())
-    .then(({ profile, publicFields, privateFields }) => {
+    .then(({ profile, publicFields, privateFields, vCard, publicLink }) => {
       // Update the profile
       updateHeader(profile);
       // Add Sections
-      addSectionsToDOM("#public .bg-white", publicFields);
-      addSectionsToDOM("#private .bg-white", privateFields);
+      addSectionsToDOM("#public div", publicFields);
+      addSectionsToDOM("#private div", privateFields);
+
+      //load QRCode by img base64
+      loadImgBase64("#public-vcard", vCard.qrcode);
+      loadImgBase64("#public-link", publicLink.qrcode);
     })
     .catch((error) => console.error("Error:", error));
+}
+
+function loadImgBase64(element, imgBase64) {
+  const qrcode = document.querySelector(element);
+  const qrcodeImg = document.createElement("img");
+  qrcodeImg.src = imgBase64;
+  qrcodeImg.alt = "QRCode";
+  qrcode.appendChild(qrcodeImg);
 }
 
 function updateHeader(profile) {
@@ -57,7 +69,7 @@ function updateHeader(profile) {
 }
 
 function createSection(data) {
-  return `<section class="bg-white">
+  return `<section>
       <div class="mx-auto h-full flex items-center justify-between">
         <a class="${data.type}-link flex justify-between" 
           href="${data.url || "#"}">
