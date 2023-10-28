@@ -78,12 +78,10 @@ function createSection(data) {
               <i class="fa-solid ${data.icon}"></i>
             </span>
           </div>
-          <p class="text-sm text-gray-600 
-            ${data.type} ml-5 flex items-center justify-center">
-            ${data.text}
-          </p>
+          <p class="text-sm text-gray-600 ${data.type} ml-5 flex items-center 
+          justify-center text-copy">${data.text}</p>
         </a>
-        <div class="w-1/12 flex items-center justify-center">
+        <div class="w-1/12 flex items-center justify-center cursor-pointer copy">
           <i class="fa-regular fa-copy"></i>
         </div>
       </div>
@@ -95,4 +93,17 @@ function addSectionsToDOM(element, sectionsData) {
   sectionsData.forEach((data) => {
     main.insertAdjacentHTML("beforeend", createSection(data));
   });
+}
+// Adiciona um ouvinte de evento ao documento (ou a um elemento pai mais específico)
+document.addEventListener("click", function ({ target }) {
+  if (target.classList.contains("copy") || target.classList.contains("fa-copy")) {
+    console.log(target.closest("section"));
+    const textToCopy = target.closest("section").querySelector(".text-copy").textContent;
+    clipboardCopy(textToCopy);
+    console.log("Texto copiado:", textToCopy);
+  }
+});
+
+async function clipboardCopy(text) {
+  await navigator.clipboard.writeText(text);
 }
