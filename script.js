@@ -96,9 +96,14 @@ function addSectionsToDOM(element, sectionsData) {
 }
 // Adiciona um ouvinte de evento ao documento (ou a um elemento pai mais específico)
 document.addEventListener("click", function ({ target }) {
-  if (target.classList.contains("copy") || target.classList.contains("fa-copy")) {
+  if (
+    target.classList.contains("copy") ||
+    target.classList.contains("fa-copy")
+  ) {
     console.log(target.closest("section"));
-    const textToCopy = target.closest("section").querySelector(".text-copy").textContent;
+    const textToCopy = target
+      .closest("section")
+      .querySelector(".text-copy").textContent;
     clipboardCopy(textToCopy);
     console.log("Texto copiado:", textToCopy);
   }
@@ -106,4 +111,23 @@ document.addEventListener("click", function ({ target }) {
 
 async function clipboardCopy(text) {
   await navigator.clipboard.writeText(text);
+  await activeToast("Copied successfully");
+}
+
+async function activeToast(msg) {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-right",
+    iconColor: "white",
+    customClass: {
+      popup: "colored-toast",
+    },
+    showConfirmButton: false,
+    timer: 1500,
+    timerProgressBar: true,
+  });
+  await Toast.fire({
+    icon: "success",
+    title: msg,
+  });
 }
