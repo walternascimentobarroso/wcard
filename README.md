@@ -1,6 +1,13 @@
 # WCard
 
 <details open>
+<summary><h2> :scroll: Overview </h2></summary>
+
+Card to share data simply and safely
+
+</details>
+
+<details open>
 <summary><h2> :octocat: GitFlow </h2></summary>
 
 ```
@@ -20,3 +27,7 @@ git flow feature finish new-feature
 ```
 
 </details>
+
+***
+
+Made with &nbsp;❤️&nbsp;
