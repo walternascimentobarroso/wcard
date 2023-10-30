@@ -38,7 +38,8 @@ function loadData() {
       addSectionsToDOM("#private div", privateFields);
 
       //load QRCode by img base64
-      loadImgBase64("#public-vcard", vCard.qrcode);
+      makeVCard(profile, publicFields);
+      // loadImgBase64("#public-vcard", vCard.qrcode);
       loadImgBase64("#public-link", publicLink.qrcode);
     })
     .catch((error) => console.error("Error:", error));
@@ -130,4 +131,42 @@ async function activeToast(msg) {
     icon: "success",
     title: msg,
   });
+}
+
+const makeVCardVersion = () => `VERSION:3.0`;
+const makeVCardInfo = (info) => `N:${info}`;
+const makeVCardName = (name) => `FN:${name}`;
+const makeVCardOrg = (org) => `ORG:${org}`;
+const makeVCardTitle = (title) => `TITLE:${title}`;
+const makeVCardPhoto = (img) => `PHOTO;TYPE=JPEG;ENCODING=b:[${img}]`;
+const makeVCardTel = (phone) => `TEL;TYPE=WORK,VOICE:${phone}`;
+const makeVCardAdr = (address) => `ADR;TYPE=WORK,PREF:;;${address}`;
+const makeVCardEmail = (email) => `EMAIL:${email}`;
+const makeVCardTimeStamp = () => `REV:${new Date().toISOString()}`;
+
+function makeVCard(profile, publicFields) {
+  let [email, phone, website, address] = publicFields;
+  let vcard = `BEGIN:VCARD
+${makeVCardVersion()}
+${makeVCardInfo(website.text)}
+${makeVCardName(profile.name)}
+${makeVCardOrg(profile.company)}
+${makeVCardTitle(profile.title)}
+${makeVCardPhoto(profile.picture)}
+${makeVCardTel(phone.text)}
+${makeVCardAdr(address.text)}
+${makeVCardEmail(email.text)}
+${makeVCardTimeStamp()}
+END:VCARD`;
+  generate(vcard);
+}
+
+function generate(vcard) {
+  let qrcodeEl = document.querySelector("#public-vcard");
+  new QRCode(qrcodeEl, {
+    text: vcard,
+    width: 300,
+    height: 300,
+  });
+
 }
