@@ -95,8 +95,10 @@ function addSectionsToDOM(element, sectionsData) {
     main.insertAdjacentHTML("beforeend", createSection(data));
   });
 }
-// Adiciona um ouvinte de evento ao documento (ou a um elemento pai mais específico)
-document.addEventListener("click", function ({ target }) {
+
+document.addEventListener("click", activeCopy);
+
+function activeCopy({ target }) {
   if (
     target.classList.contains("copy") ||
     target.classList.contains("fa-copy")
@@ -108,7 +110,7 @@ document.addEventListener("click", function ({ target }) {
     clipboardCopy(textToCopy);
     console.log("Texto copiado:", textToCopy);
   }
-});
+}
 
 async function clipboardCopy(text) {
   await navigator.clipboard.writeText(text);
