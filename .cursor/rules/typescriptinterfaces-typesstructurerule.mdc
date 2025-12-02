@@ -1,0 +1,84 @@
+---
+alwaysApply: true
+---
+
+---
+Ensure consistent organization of TypeScript interfaces and types across the project, keeping components clean and maintaining a scalable architecture.
+
+## Required Rules
+
+1. **All interfaces and types (`interface`, `type`, `enum`) must be stored in:**
+
+```
+types/
+```
+
+or in domain-based subfolders:
+
+```
+types/<domain>/
+````
+
+2. **Defining interfaces inside React component files is strictly forbidden.**  
+Invalid example:
+```ts
+// ❌ Not allowed
+interface Props { ... }
+export default function Button() { ... }
+````
+
+3. **All interfaces and types must be exported:**
+
+   ```ts
+   export interface User { ... }
+   ```
+
+4. **Global declarations must only be placed in:**
+
+   ```
+   @types/
+   ```
+
+   and should be limited to:
+
+   * `.d.ts` files
+   * global object extensions (e.g., `Window`, `NodeJS.Process`)
+
+5. **All files must import types from `types` using absolute imports:**
+
+   ```ts
+   import { User } from "@/types/user";
+   ```
+
+6. **Type duplication is not allowed.**
+   Shared or cross-domain types must be placed in:
+
+   ```
+   types/common/
+   ```
+
+## 📁 Recommended Structure
+
+```
+
+  types/
+    user/
+      user.ts
+      user-profile.ts
+    product/
+      product.ts
+    common/
+      pagination.ts
+  @types/
+    global.d.ts
+```
+
+## 🎯 Rationale
+
+* Promotes clean and maintainable components
+* Centralizes all type definitions
+* Avoids redundancy and naming conflicts
+* Encourages scalable and predictable architecture
+* Aligns with modern frontend engineering best practices
+
+```

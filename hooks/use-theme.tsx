@@ -1,8 +1,7 @@
 "use client"
 
 import * as React from "react"
-
-type Theme = "dark" | "light" | "system"
+import { Theme } from "@/types/common/theme"
 
 export function useTheme() {
   const [theme, setTheme] = React.useState<Theme>("system")

@@ -1,4 +1,4 @@
-import { ContactInfo } from "@/components/business-card"
+import { ContactInfo } from "@/types/contact/contact-info"
 
 // Personalize estas informações com os seus dados
 export const contactData: ContactInfo = {

@@ -4,15 +4,9 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Check, Copy, Mail, Phone, Globe, Linkedin, Github, MessageCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { ContactButtonProps, ContactButtonType } from "@/types/contact/contact-button"
 
-interface ContactButtonProps {
-  type: "email" | "phone" | "website" | "linkedin" | "github" | "whatsapp"
-  value: string
-  label?: string
-  className?: string
-}
-
-const iconMap = {
+const iconMap: Record<ContactButtonType, typeof Mail> = {
   email: Mail,
   phone: Phone,
   website: Globe,

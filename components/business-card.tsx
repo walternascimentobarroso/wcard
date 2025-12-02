@@ -8,25 +8,7 @@ import { Button } from "@/components/ui/button"
 import { ContactButton } from "@/components/contact-button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
-
-export interface ContactInfo {
-  name: string
-  title: string
-  bio: string
-  location: string
-  languages: string[]
-  avatar?: string
-  email?: string
-  phone?: string
-  website?: string
-  linkedin?: string
-  github?: string
-  whatsapp?: string
-}
-
-interface BusinessCardProps {
-  contact: ContactInfo
-}
+import { BusinessCardProps } from "@/types/contact/business-card"
 
 export function BusinessCard({ contact }: BusinessCardProps) {
   const [mounted, setMounted] = useState(false)
@@ -102,7 +84,7 @@ export function BusinessCard({ contact }: BusinessCardProps) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen flex items-center justify-center p-4 from-white via-blue-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <div
         className={cn(
           "w-full max-w-md glass rounded-3xl p-8 shadow-2xl",
