@@ -104,8 +104,21 @@ export function BusinessCard({ contact }: BusinessCardProps) {
           isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
         )}
       >
-        {/* Header with theme and language toggles */}
+        {/* Header with theme, language and QR code toggles */}
         <div className="flex justify-end gap-2 mb-4">
+          <Button
+            onClick={() => setShowQR(!showQR)}
+            className={cn(
+              "relative transition-all duration-300 hover:scale-110",
+              isDark ? "text-slate-200" : "text-gray-700"
+            )}
+            variant="ghost"
+            size="icon"
+            aria-label="Mostrar QR Code"
+            title={t("qrCode")}
+          >
+            <QrCode className="h-5 w-5" />
+          </Button>
           <LanguageToggle />
           <ThemeToggle />
         </div>
@@ -240,20 +253,6 @@ export function BusinessCard({ contact }: BusinessCardProps) {
           >
             <Share2 className="h-4 w-4 mr-2" />
             {copied ? t("copied") : t("share")}
-          </Button>
-          <Button
-            onClick={() => setShowQR(!showQR)}
-            className={cn(
-              "glass border text-white transition-all duration-200",
-              isDark
-                ? "bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700"
-                : "bg-white/70 border-slate-300/50 text-gray-900 hover:bg-white/90"
-            )}
-            variant="outline"
-            size="icon"
-            aria-label="Mostrar QR Code"
-          >
-            <QrCode className="h-4 w-4" />
           </Button>
         </div>
 
