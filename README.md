@@ -1,36 +1,141 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎴 WCard - Cartão de Visita Online Profissional
 
-## Getting Started
+Um cartão de visita digital moderno, responsivo e interativo construído com Next.js, React, TypeScript, Tailwind CSS e shadcn/ui.
 
-First, run the development server:
+## ✨ Funcionalidades
+
+- 🎨 **Design Glassmorphism** - Efeito de vidro fosco moderno
+- 🌓 **Dark Mode** - Toggle animado com persistência no localStorage
+- 📱 **100% Responsivo** - Perfeito em mobile, tablet e desktop
+- 🔗 **Múltiplos Contactos** - Email, telefone, WhatsApp, LinkedIn, GitHub, website
+- 📋 **Copiar Contacto** - Botão para copiar informações com feedback visual
+- 📥 **Download vCard** - Gere e descarregue um ficheiro .vcf
+- 🔲 **QR Code** - Gere dinamicamente um QR code para partilhar o cartão
+- 📤 **Partilhar** - Usa Web Share API quando disponível
+- ✨ **Animações Suaves** - Fade-in, hover effects e microtransições
+- 🎯 **Efeito 3D** - Interação suave ao mover o mouse sobre o cartão
+
+## 🚀 Começar
+
+### Pré-requisitos
+
+- Node.js 18+ 
+- npm, yarn, pnpm ou bun
+
+### Instalação
+
+1. Clone o repositório ou use este projeto
+2. Instale as dependências:
+
+```bash
+npm install
+```
+
+3. Personalize os seus dados em `lib/contact-data.ts`
+
+4. Execute o servidor de desenvolvimento:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Abra [http://localhost:3000](http://localhost:3000) no seu navegador
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📝 Personalização
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Edite o ficheiro `lib/contact-data.ts` para personalizar:
 
-## Learn More
+- Nome completo
+- Título profissional
+- Biografia
+- Localização
+- Idiomas
+- Avatar (adicione uma imagem em `/public` e descomente a linha)
+- Email
+- Telefone
+- WhatsApp
+- Website
+- LinkedIn
+- GitHub
 
-To learn more about Next.js, take a look at the following resources:
+### Exemplo:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```typescript
+export const contactData: ContactInfo = {
+  name: "João Silva",
+  title: "Senior Full Stack Developer",
+  bio: "Desenvolvedor apaixonado por criar soluções inovadoras.",
+  location: "Lisboa, Portugal",
+  languages: ["Português", "English"],
+  avatar: "/avatar.jpg", // Adicione a imagem em /public
+  email: "joao@exemplo.com",
+  phone: "+351 912 345 678",
+  // ... outros campos
+}
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🎨 Personalizar Cores
 
-## Deploy on Vercel
+As cores podem ser personalizadas editando `app/globals.css`. As variáveis CSS permitem ajustar facilmente a paleta de cores.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📦 Estrutura do Projeto
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+wcard/
+├── app/
+│   ├── layout.tsx          # Layout raiz
+│   ├── page.tsx            # Página principal
+│   └── globals.css         # Estilos globais + Tailwind
+├── components/
+│   ├── ui/
+│   │   └── button.tsx      # Componente Button do shadcn/ui
+│   ├── business-card.tsx   # Componente principal do cartão
+│   ├── contact-button.tsx  # Botões de contacto
+│   └── theme-toggle.tsx    # Toggle de dark mode
+├── lib/
+│   ├── contact-data.ts     # Dados de contacto (PERSONALIZE AQUI)
+│   └── utils.ts            # Utilitários (cn function)
+└── hooks/
+    └── use-theme.tsx       # Hook para gerir tema
+```
+
+## 🚢 Deploy
+
+### Vercel (Recomendado)
+
+1. Faça push do código para o GitHub
+2. Importe o projeto na [Vercel](https://vercel.com)
+3. A Vercel detectará automaticamente o Next.js
+4. Clique em "Deploy"
+
+O projeto estará online em segundos!
+
+### Outras Plataformas
+
+Este projeto pode ser deployado em qualquer plataforma que suporte Next.js:
+- Netlify
+- Railway
+- AWS Amplify
+- Cloudflare Pages
+
+## 🛠️ Tecnologias
+
+- **Next.js 16** - Framework React
+- **React 19** - Biblioteca UI
+- **TypeScript** - Tipagem estática
+- **Tailwind CSS 4** - Estilização
+- **shadcn/ui** - Componentes UI
+- **lucide-react** - Ícones
+- **qrcode.react** - Geração de QR codes
+
+## 📄 Licença
+
+Este projeto é open source e está disponível sob a licença MIT.
+
+## 🤝 Contribuições
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou pull requests.
+
+---
+
+Feito com ❤️ usando Next.js e Tailwind CSS
