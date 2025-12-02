@@ -1,0 +1,27 @@
+---
+alwaysApply: true
+---
+
+All TypeScript interfaces, types, and enums must be stored inside the `types/` directory or in domain-specific subfolders such as `types/<domain>/`. Defining interfaces or types inside React component files is not allowed.
+
+All type definitions must be exported and imported using absolute paths (e.g., `@/types/user/user`). Relative imports are not permitted.
+
+Global declarations are only allowed inside the `@types/` directory, limited to `.d.ts` files or global object extensions.
+
+Duplicated types are not allowed. Shared or cross-domain definitions must be placed inside `types/common/`.
+
+Recommended structure:
+
+
+```
+  types/
+    user/
+      user.ts
+      user-profile.ts
+    product/
+      product.ts
+    common/
+      pagination.ts
+  @types/
+    global.d.ts
+```

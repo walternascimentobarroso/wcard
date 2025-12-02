@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Check, Copy, Mail, Phone, Globe, Linkedin, Github, MessageCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useDarkMode } from "@/hooks/use-dark-mode"
 import { ContactButtonProps, ContactButtonType } from "@/types/contact/contact-button"
 
 const iconMap: Record<ContactButtonType, typeof Mail> = {
@@ -15,8 +16,46 @@ const iconMap: Record<ContactButtonType, typeof Mail> = {
   whatsapp: MessageCircle,
 }
 
+const getButtonStyles = (type: ContactButtonType, isDark: boolean) => {
+  const styles = {
+    email: isDark 
+      ? "bg-blue-800 hover:bg-blue-700 text-white shadow-md"
+      : "bg-blue-600 hover:bg-blue-700 text-white shadow-md",
+    phone: isDark
+      ? "bg-green-800 hover:bg-green-700 text-white shadow-md"
+      : "bg-green-600 hover:bg-green-700 text-white shadow-md",
+    whatsapp: isDark
+      ? "bg-green-800 hover:bg-green-700 text-white shadow-md"
+      : "bg-green-600 hover:bg-green-700 text-white shadow-md",
+    website: isDark
+      ? "bg-purple-800 hover:bg-purple-700 text-white shadow-md"
+      : "bg-purple-600 hover:bg-purple-700 text-white shadow-md",
+    linkedin: isDark
+      ? "bg-blue-700 hover:bg-blue-600 text-white shadow-md"
+      : "bg-blue-500 hover:bg-blue-600 text-white shadow-md",
+    github: isDark
+      ? "bg-slate-700 hover:bg-slate-600 text-white shadow-md"
+      : "bg-slate-700 hover:bg-slate-800 text-white shadow-md",
+  }
+  return styles[type] || styles.email
+}
+
+const getButtonLabel = (type: ContactButtonType, customLabel?: string) => {
+  if (customLabel) return customLabel
+  const labels = {
+    email: "Email Me",
+    phone: "Call / WhatsApp",
+    whatsapp: "Call / WhatsApp",
+    website: "Visit Website",
+    linkedin: "LinkedIn",
+    github: "GitHub",
+  }
+  return labels[type] || type
+}
+
 export function ContactButton({ type, value, label, className }: ContactButtonProps) {
   const [copied, setCopied] = useState(false)
+  const isDark = useDarkMode()
   const Icon = iconMap[type]
 
   const handleClick = () => {
@@ -42,30 +81,32 @@ export function ContactButton({ type, value, label, className }: ContactButtonPr
 
   return (
     <div className="relative group">
-      <Button
-        variant="outline"
+      <button
         onClick={handleClick}
         className={cn(
-          "w-full justify-start gap-3 h-auto py-3 px-4 transition-all duration-200 hover:scale-105 hover:shadow-lg",
-          "glass border-white/70 dark:border-white/20 hover:border-white/90 dark:hover:border-white/40",
-          "bg-white/90 dark:bg-transparent",
+          "w-full flex items-center justify-start gap-3 h-auto py-4 px-4 rounded-xl transition-all duration-200",
+          "hover:scale-[1.02] hover:shadow-lg",
+          getButtonStyles(type, isDark),
           className
         )}
       >
-        <Icon className="h-5 w-5 shrink-0" />
-        <span className="flex-1 text-left">{label || value}</span>
-      </Button>
+        <Icon className="h-5 w-5 shrink-0 text-white" />
+        <div className="flex-1 text-left">
+          <div className="font-medium text-white">{getButtonLabel(type, label)}</div>
+          <div className="text-xs text-white/80 mt-0.5">{value}</div>
+        </div>
+      </button>
       <button
         onClick={handleCopy}
         className={cn(
-          "absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md transition-all duration-200",
-          "opacity-0 group-hover:opacity-100 hover:bg-accent/50",
-          "flex items-center justify-center"
+          "absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-md transition-all duration-200",
+          "opacity-0 group-hover:opacity-100 hover:bg-white/20",
+          "flex items-center justify-center text-white"
         )}
         aria-label="Copy to clipboard"
       >
         {copied ? (
-          <Check className="h-4 w-4 text-green-500" />
+          <Check className="h-4 w-4 text-green-300" />
         ) : (
           <Copy className="h-4 w-4" />
         )}

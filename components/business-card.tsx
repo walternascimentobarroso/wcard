@@ -7,6 +7,7 @@ import { Download, Share2, User, QrCode } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ContactButton } from "@/components/contact-button"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useDarkMode } from "@/hooks/use-dark-mode"
 import { cn } from "@/lib/utils"
 import { BusinessCardProps } from "@/types/contact/business-card"
 
@@ -15,6 +16,7 @@ export function BusinessCard({ contact }: BusinessCardProps) {
   const [showQR, setShowQR] = useState(false)
   const [copied, setCopied] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
+  const isDark = useDarkMode()
 
   useEffect(() => {
     setMounted(true)
@@ -84,12 +86,15 @@ export function BusinessCard({ contact }: BusinessCardProps) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 from-white via-blue-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className={cn(
+      "min-h-screen flex items-center justify-center p-4",
+      isDark && "bg-transparent"
+    )}>
       <div
         className={cn(
-          "w-full max-w-md glass rounded-3xl p-8 shadow-2xl",
-          "border transition-all duration-500",
-          "border-white/80 dark:border-white/20",
+          "w-full max-w-md rounded-3xl p-8 shadow-2xl transition-all duration-500",
+          "glass",
+          isDark ? "bg-slate-900/80 border-slate-700/50" : "",
           isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
         )}
       >
@@ -103,22 +108,31 @@ export function BusinessCard({ contact }: BusinessCardProps) {
           "flex justify-center mb-6 transition-all duration-700 delay-100",
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
         )}>
-          <div className="relative">
+          <div className="relative w-32 h-32">
+            {/* Anel colorido brilhante */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 p-[3px] animate-pulse">
+              <div className={cn("w-full h-full rounded-full", isDark ? "bg-slate-900" : "bg-slate-50")}></div>
+            </div>
             {contact.avatar ? (
-              <div className="relative w-32 h-32 rounded-full overflow-hidden ring-4 ring-white/80 dark:ring-white/20 shadow-xl">
+              <div className="relative w-full h-full rounded-full overflow-hidden z-10">
                 <Image
                   src={contact.avatar}
                   alt={contact.name}
                   fill
-                  className="object-cover"
+                  className="object-cover rounded-full"
                   priority
                 />
               </div>
             ) : (
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center ring-4 ring-white/80 dark:ring-white/20 shadow-xl">
+              <div className="relative w-full h-full rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center z-10">
                 <User className="h-16 w-16 text-white" />
               </div>
             )}
+            {/* Status online */}
+            <div className={cn(
+              "absolute bottom-1 right-1 w-5 h-5 bg-green-500 rounded-full border-[3px] z-20 shadow-lg",
+              isDark ? "border-slate-900" : "border-white"
+            )}></div>
           </div>
         </div>
 
@@ -127,15 +141,24 @@ export function BusinessCard({ contact }: BusinessCardProps) {
           "text-center mb-4 transition-all duration-700 delay-200",
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
         )}>
-          <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+          <h1 className={cn(
+            "text-3xl font-bold mb-3",
+            isDark ? "text-white" : "text-gray-900"
+          )}>
             {contact.name}
           </h1>
-          <p className="text-lg text-muted-foreground">{contact.title}</p>
+          <div className={cn(
+            "inline-block px-4 py-1.5 rounded-full text-white text-sm font-medium mb-3 shadow-sm",
+            isDark ? "bg-blue-700" : "bg-blue-500/90"
+          )}>
+            {contact.title.toUpperCase()}
+          </div>
         </div>
 
         {/* Bio */}
         <p className={cn(
-          "text-center text-sm text-muted-foreground mb-6 transition-opacity duration-700 delay-300",
+          "text-center text-sm mb-6 transition-opacity duration-700 delay-300",
+          isDark ? "text-slate-300" : "text-gray-800",
           isVisible ? "opacity-100" : "opacity-0"
         )}>
           {contact.bio}
@@ -143,17 +166,18 @@ export function BusinessCard({ contact }: BusinessCardProps) {
 
         {/* Location and Languages */}
         <div className={cn(
-          "flex flex-col gap-2 mb-6 text-sm text-muted-foreground transition-opacity duration-700 delay-300",
+          "flex items-center justify-center gap-6 mb-6 text-sm transition-opacity duration-700 delay-300",
+          isDark ? "text-slate-400" : "text-gray-700",
           isVisible ? "opacity-100" : "opacity-0"
         )}>
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center gap-2">
             <span>📍</span>
             <span>{contact.location}</span>
           </div>
           {contact.languages.length > 0 && (
-            <div className="flex items-center justify-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
               <span>🌐</span>
-              <span>{contact.languages.join(" • ")}</span>
+              <span>{contact.languages[0]}</span>
             </div>
           )}
         </div>
@@ -164,22 +188,19 @@ export function BusinessCard({ contact }: BusinessCardProps) {
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
         )}>
           {contact.email && (
-            <ContactButton type="email" value={contact.email} label="Email" />
+            <ContactButton type="email" value={contact.email} />
           )}
-          {contact.phone && (
-            <ContactButton type="phone" value={contact.phone} label="Telefone" />
-          )}
-          {contact.whatsapp && (
-            <ContactButton type="whatsapp" value={contact.whatsapp} label="WhatsApp" />
+          {(contact.phone || contact.whatsapp) && (
+            <ContactButton type={contact.whatsapp ? "whatsapp" : "phone"} value={contact.whatsapp || contact.phone || ""} />
           )}
           {contact.website && (
-            <ContactButton type="website" value={contact.website} label="Website" />
+            <ContactButton type="website" value={contact.website} />
           )}
           {contact.linkedin && (
-            <ContactButton type="linkedin" value={contact.linkedin} label="LinkedIn" />
+            <ContactButton type="linkedin" value={contact.linkedin} />
           )}
           {contact.github && (
-            <ContactButton type="github" value={contact.github} label="GitHub" />
+            <ContactButton type="github" value={contact.github} />
           )}
         </div>
 
@@ -190,23 +211,37 @@ export function BusinessCard({ contact }: BusinessCardProps) {
         )}>
           <Button
             onClick={generateVCard}
-            className="flex-1 glass border-white/70 dark:border-white/20 hover:border-white/90 dark:hover:border-white/40 bg-white/90 dark:bg-transparent transition-all duration-200 hover:scale-105"
+            className={cn(
+              "flex-1 glass border transition-all duration-200 font-medium",
+              isDark
+                ? "bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700"
+                : "bg-white/70 border-slate-300/50 text-gray-900 hover:bg-white/90"
+            )}
             variant="outline"
           >
-            <Download className="h-4 w-4 mr-2" />
-            vCard
+            <Download className={cn("h-4 w-4 mr-2", isDark ? "text-slate-200" : "text-gray-900")} />
+            Save Contact
           </Button>
           <Button
             onClick={handleShare}
-            className="flex-1 glass border-white/70 dark:border-white/20 hover:border-white/90 dark:hover:border-white/40 bg-white/90 dark:bg-transparent transition-all duration-200 hover:scale-105"
-            variant="outline"
+            className={cn(
+              "flex-1 glass border text-white transition-all duration-200 font-medium",
+              isDark
+                ? "bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700"
+                : "bg-white/70 border-slate-300/50 text-gray-900 hover:bg-white/90"
+            )}
           >
             <Share2 className="h-4 w-4 mr-2" />
-            {copied ? "Copiado!" : "Partilhar"}
+            {copied ? "Copied!" : "Share"}
           </Button>
           <Button
             onClick={() => setShowQR(!showQR)}
-            className="glass border-white/50 dark:border-white/20 hover:border-white/70 dark:hover:border-white/40 bg-white/50 dark:bg-transparent transition-all duration-200 hover:scale-105"
+            className={cn(
+              "glass border text-white transition-all duration-200",
+              isDark
+                ? "bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700"
+                : "bg-white/70 border-slate-300/50 text-gray-900 hover:bg-white/90"
+            )}
             variant="outline"
             size="icon"
             aria-label="Mostrar QR Code"
@@ -222,17 +257,28 @@ export function BusinessCard({ contact }: BusinessCardProps) {
             onClick={() => setShowQR(false)}
           >
             <div
-              className="glass rounded-2xl p-8 border border-white/80 dark:border-white/20 bg-white/95 dark:bg-black/30 transition-all duration-300 scale-100"
+              className={cn(
+                "rounded-2xl p-8 border-2 transition-all duration-300 scale-100",
+                isDark
+                  ? "border-slate-600 bg-slate-800"
+                  : "border-slate-300 bg-white"
+              )}
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-xl font-semibold mb-4 text-center">
+              <h3 className={cn(
+                "text-xl font-semibold mb-4 text-center",
+                isDark ? "text-white" : "text-gray-900"
+              )}>
                 QR Code
               </h3>
               <div className="bg-white p-4 rounded-lg">
                 <QRCodeSVG value={currentUrl} size={256} />
               </div>
-              <p className="text-sm text-muted-foreground text-center mt-4">
-                Escaneie para aceder ao cartão
+              <p className={cn(
+                "text-sm text-center mt-4",
+                isDark ? "text-slate-400" : "text-gray-800"
+              )}>
+                Scan to access the card
               </p>
             </div>
           </div>

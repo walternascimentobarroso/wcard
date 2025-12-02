@@ -82,17 +82,48 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
+/* Light mode gradient background */
+body {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e0e7ff 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Dark mode gradient background */
+.dark body {
+  background: linear-gradient(to bottom right, rgb(2 6 23), rgb(8 47 73), rgb(19 78 74));
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
 /* Glassmorphism utilities */
 .glass {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
 }
 
 .dark .glass {
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Force dark text in light mode */
+body:not(.dark) h1.text-gray-900 {
+  color: rgb(17, 24, 39) !important;
+}
+
+body:not(.dark) .text-gray-800 {
+  color: rgb(31, 41, 55) !important;
+}
+
+body:not(.dark) .text-gray-700 {
+  color: rgb(55, 65, 81) !important;
+}
+
+body:not(.dark) .text-gray-900 {
+  color: rgb(17, 24, 39) !important;
 }
