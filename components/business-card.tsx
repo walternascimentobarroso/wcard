@@ -7,7 +7,10 @@ import { Download, Share2, User, QrCode } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ContactButton } from "@/components/contact-button"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { LanguageToggle } from "@/components/language-toggle"
 import { useDarkMode } from "@/hooks/use-dark-mode"
+import { useLanguage } from "@/contexts/language-context"
+import { getTranslation } from "@/lib/i18n/translations"
 import { cn } from "@/lib/utils"
 import { BusinessCardProps } from "@/types/contact/business-card"
 
@@ -17,6 +20,9 @@ export function BusinessCard({ contact }: BusinessCardProps) {
   const [copied, setCopied] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const isDark = useDarkMode()
+  const { language } = useLanguage()
+  
+  const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(language, key)
 
   useEffect(() => {
     setMounted(true)
@@ -98,8 +104,9 @@ export function BusinessCard({ contact }: BusinessCardProps) {
           isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
         )}
       >
-        {/* Header with theme toggle */}
-        <div className="flex justify-end mb-4">
+        {/* Header with theme and language toggles */}
+        <div className="flex justify-end gap-2 mb-4">
+          <LanguageToggle />
           <ThemeToggle />
         </div>
 
@@ -220,7 +227,7 @@ export function BusinessCard({ contact }: BusinessCardProps) {
             variant="outline"
           >
             <Download className={cn("h-4 w-4 mr-2", isDark ? "text-slate-200" : "text-gray-900")} />
-            Save Contact
+            {t("saveContact")}
           </Button>
           <Button
             onClick={handleShare}
@@ -232,7 +239,7 @@ export function BusinessCard({ contact }: BusinessCardProps) {
             )}
           >
             <Share2 className="h-4 w-4 mr-2" />
-            {copied ? "Copied!" : "Share"}
+            {copied ? t("copied") : t("share")}
           </Button>
           <Button
             onClick={() => setShowQR(!showQR)}
@@ -269,7 +276,7 @@ export function BusinessCard({ contact }: BusinessCardProps) {
                 "text-xl font-semibold mb-4 text-center",
                 isDark ? "text-white" : "text-gray-900"
               )}>
-                QR Code
+                {t("qrCode")}
               </h3>
               <div className="bg-white p-4 rounded-lg">
                 <QRCodeSVG value={currentUrl} size={256} />
@@ -278,7 +285,7 @@ export function BusinessCard({ contact }: BusinessCardProps) {
                 "text-sm text-center mt-4",
                 isDark ? "text-slate-400" : "text-gray-800"
               )}>
-                Scan to access the card
+                {t("scanToAccess")}
               </p>
             </div>
           </div>
