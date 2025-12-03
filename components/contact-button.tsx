@@ -105,7 +105,7 @@ export function ContactButton({ type, value, label, className }: ContactButtonPr
         onClick={handleCopy}
         className={cn(
           "absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-md transition-all duration-200",
-          "opacity-0 group-hover:opacity-100 hover:bg-white/20",
+          "opacity-100 hover:bg-white/20",
           "flex items-center justify-center text-white"
         )}
         aria-label="Copy to clipboard"
