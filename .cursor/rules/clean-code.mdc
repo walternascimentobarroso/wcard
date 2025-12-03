@@ -13,3 +13,4 @@ alwaysApply: true
 * Do **not** use `else`; prefer guard clauses and flat code structures
 * Follow **SOLID** principles whenever possible to keep the system maintainable and extensible
 * Keep code minimal, splitting logic into smaller files/modules when appropriate
+* Always write comments in English, whenever comments are necessary

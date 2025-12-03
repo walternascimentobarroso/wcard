@@ -4,8 +4,7 @@ import { useState } from "react"
 import { Check, Copy, Lock, FileText, Eye, EyeOff } from "lucide-react"
 import { cn, copyToClipboard } from "@/lib/utils"
 import { useDarkMode } from "@/hooks/use-dark-mode"
-import { useLanguage } from "@/contexts/language-context"
-import { getTranslation, TranslationKey } from "@/lib/i18n/translations"
+import { useTranslation } from "@/hooks/use-translation"
 import { PrivateButtonProps, PrivateButtonType } from "@/types/contact/private-button"
 
 const iconMap: Record<PrivateButtonType, typeof Lock> = {
@@ -25,9 +24,8 @@ const getButtonStyles = (type: PrivateButtonType, isDark: boolean) => {
   return styles[type] || styles.password
 }
 
-const getButtonLabel = (type: PrivateButtonType, language: "pt" | "en", customLabel?: string) => {
+const getButtonLabel = (type: PrivateButtonType, t: ReturnType<typeof useTranslation>, customLabel?: string) => {
   if (customLabel) return customLabel
-  const t = (key: TranslationKey) => getTranslation(language, key)
   
   const labels = {
     password: t("password"),
@@ -40,7 +38,7 @@ export function PrivateButton({ type, value, label, className, displayValue }: P
   const [copied, setCopied] = useState(false)
   const [showValue, setShowValue] = useState(false)
   const isDark = useDarkMode()
-  const { language } = useLanguage()
+  const t = useTranslation()
   const Icon = iconMap[type]
 
   const handleCopy = async (e: React.MouseEvent) => {
@@ -73,7 +71,7 @@ export function PrivateButton({ type, value, label, className, displayValue }: P
       >
         <Icon className="h-5 w-5 shrink-0 text-white" />
         <div className="flex-1 text-left">
-          <div className="font-medium text-white">{getButtonLabel(type, language, label)}</div>
+          <div className="font-medium text-white">{getButtonLabel(type, t, label)}</div>
           <div className={cn(
             "text-xs text-white/80 mt-0.5",
             type === "password" && "font-mono"
@@ -91,7 +89,7 @@ export function PrivateButton({ type, value, label, className, displayValue }: P
               "hover:bg-white/20",
               "flex items-center justify-center text-white"
             )}
-            aria-label={showValue ? "Hide value" : "Show value"}
+            aria-label={showValue ? t("hideValue") : t("showValue")}
           >
             {showValue ? (
               <EyeOff className="h-4 w-4" />

@@ -21,6 +21,8 @@ export const translations = {
     emailMe: "Enviar Email",
     callWhatsApp: "Ligar / WhatsApp",
     visitWebsite: "Visitar Website",
+    showValue: "Mostrar valor",
+    hideValue: "Ocultar valor",
   },
   en: {
     email: "Email",
@@ -42,6 +44,8 @@ export const translations = {
     emailMe: "Email Me",
     callWhatsApp: "Call / WhatsApp",
     visitWebsite: "Visit Website",
+    showValue: "Show value",
+    hideValue: "Hide value",
   },
 } as const
 

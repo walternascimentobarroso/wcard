@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Check, Copy, Mail, Phone, Globe, Linkedin, Github, MessageCircle, MapPin } from "lucide-react"
 import { cn, copyToClipboard } from "@/lib/utils"
 import { useDarkMode } from "@/hooks/use-dark-mode"
-import { useLanguage } from "@/contexts/language-context"
-import { getTranslation } from "@/lib/i18n/translations"
+import { useTranslation } from "@/hooks/use-translation"
 import { ContactButtonProps, ContactButtonType } from "@/types/contact/contact-button"
 
 const iconMap: Record<ContactButtonType, typeof Mail> = {
@@ -46,9 +45,8 @@ const getButtonStyles = (type: ContactButtonType, isDark: boolean) => {
   return styles[type] || styles.email
 }
 
-const getButtonLabel = (type: ContactButtonType, language: "pt" | "en", customLabel?: string) => {
+const getButtonLabel = (type: ContactButtonType, t: ReturnType<typeof useTranslation>, customLabel?: string) => {
   if (customLabel) return customLabel
-  const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(language, key)
   
   const labels = {
     email: t("emailMe"),
@@ -65,21 +63,27 @@ const getButtonLabel = (type: ContactButtonType, language: "pt" | "en", customLa
 export function ContactButton({ type, value, label, className }: ContactButtonProps) {
   const [copied, setCopied] = useState(false)
   const isDark = useDarkMode()
-  const { language } = useLanguage()
+  const t = useTranslation()
   const Icon = iconMap[type]
 
   const handleClick = () => {
     if (type === "email") {
       window.location.href = `mailto:${value}`
-    } else if (type === "phone" || type === "whatsapp") {
+      return
+    }
+
+    if (type === "phone" || type === "whatsapp") {
       window.location.href = `${type === "whatsapp" ? "https://wa.me/" : "tel:"}${value.replace(/\D/g, "")}`
-    } else if (type === "address") {
-      // Abrir no Google Maps
+      return
+    }
+
+    if (type === "address") {
       const encodedAddress = encodeURIComponent(value)
       window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, "_blank", "noopener,noreferrer")
-    } else {
-      window.open(value, "_blank", "noopener,noreferrer")
+      return
     }
+
+    window.open(value, "_blank", "noopener,noreferrer")
   }
 
   const handleCopy = async (e: React.MouseEvent) => {
@@ -104,7 +108,7 @@ export function ContactButton({ type, value, label, className }: ContactButtonPr
       >
         <Icon className="h-5 w-5 shrink-0 text-white" />
         <div className="flex-1 text-left">
-          <div className="font-medium text-white">{getButtonLabel(type, language, label)}</div>
+          <div className="font-medium text-white">{getButtonLabel(type, t, label)}</div>
           <div className="text-xs text-white/80 mt-0.5">{value}</div>
         </div>
       </button>

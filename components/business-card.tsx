@@ -11,16 +11,10 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageToggle } from "@/components/language-toggle"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { useDarkMode } from "@/hooks/use-dark-mode"
-import { useLanguage } from "@/contexts/language-context"
-import { getTranslation } from "@/lib/i18n/translations"
+import { useTranslation } from "@/hooks/use-translation"
 import { cn, copyToClipboard } from "@/lib/utils"
-import { BusinessCardProps } from "@/types/contact/business-card"
-
-interface PrivateDataSectionProps {
-  contact: BusinessCardProps["contact"]
-  isDark: boolean
-  t: (key: Parameters<typeof getTranslation>[1]) => string
-}
+import { generateVCard } from "@/lib/vcard"
+import { BusinessCardProps, PrivateDataSectionProps } from "@/types/contact"
 
 function PrivateDataSection({ contact, isDark, t }: PrivateDataSectionProps) {
   return (
@@ -56,9 +50,7 @@ export function BusinessCard({ contact }: BusinessCardProps) {
   const [copied, setCopied] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const isDark = useDarkMode()
-  const { language } = useLanguage()
-  
-  const t = (key: Parameters<typeof getTranslation>[1]) => getTranslation(language, key)
+  const t = useTranslation()
 
   useEffect(() => {
     setMounted(true)
@@ -68,33 +60,6 @@ export function BusinessCard({ contact }: BusinessCardProps) {
 
   const currentUrl = typeof window !== "undefined" ? window.location.href : ""
 
-  const generateVCard = () => {
-    const vcard = [
-      "BEGIN:VCARD",
-      "VERSION:3.0",
-      `FN:${contact.name}`,
-      `TITLE:${contact.title}`,
-      contact.email && `EMAIL:${contact.email}`,
-      contact.phone && `TEL:${contact.phone}`,
-      contact.website && `URL:${contact.website}`,
-      contact.linkedin && `URL:${contact.linkedin}`,
-      contact.github && `URL:${contact.github}`,
-      `NOTE:${contact.bio}`,
-      "END:VCARD",
-    ]
-      .filter(Boolean)
-      .join("\n")
-
-    const blob = new Blob([vcard], { type: "text/vcard" })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = url
-    link.download = `${contact.name.replace(/\s+/g, "_")}.vcf`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
-  }
 
   const handleShare = async () => {
     const shareData = {
@@ -106,18 +71,20 @@ export function BusinessCard({ contact }: BusinessCardProps) {
     if (navigator.share && navigator.canShare(shareData)) {
       try {
         await navigator.share(shareData)
+        return
       } catch (err) {
         if ((err as Error).name !== "AbortError") {
           console.error("Error sharing:", err)
         }
+        return
       }
-    } else {
-      // Fallback: copy to clipboard
-      const success = await copyToClipboard(currentUrl)
-      if (success) {
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
-      }
+    }
+
+    // Fallback: copy to clipboard
+    const success = await copyToClipboard(currentUrl)
+    if (success) {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
     }
   }
 
@@ -148,7 +115,7 @@ export function BusinessCard({ contact }: BusinessCardProps) {
             )}
             variant="ghost"
             size="icon"
-            aria-label="Mostrar QR Code"
+            aria-label={t("qrCode")}
             title={t("qrCode")}
           >
             <QrCode className="h-5 w-5" />
@@ -300,7 +267,7 @@ export function BusinessCard({ contact }: BusinessCardProps) {
           isVisible ? "opacity-100" : "opacity-0"
         )}>
           <Button
-            onClick={generateVCard}
+            onClick={() => generateVCard(contact)}
             className={cn(
               "flex-1 glass border transition-all duration-200 font-medium",
               isDark

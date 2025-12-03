@@ -56,7 +56,9 @@ export async function copyToClipboard(text: string): Promise<boolean> {
         textArea.style.zIndex = "-1"
         textArea.contentEditable = "true"
         textArea.readOnly = false
-      } else {
+      }
+
+      if (!isIOS) {
         // Para Android e desktop
         textArea.style.position = "fixed"
         textArea.style.left = "-9999px"
@@ -100,34 +102,35 @@ export async function copyToClipboard(text: string): Promise<boolean> {
             resolve(false)
           }
         })
-      } else {
-        // Para Android e desktop
-        textArea.focus()
-        textArea.select()
-        textArea.setSelectionRange(0, text.length)
-
-        // Tentar copiar
-        let successful = false
-        try {
-          successful = document.execCommand("copy")
-        } catch (execErr) {
-          console.warn("execCommand failed:", execErr)
-        }
-
-        // Limpar seleção
-        const selection = window.getSelection()
-        if (selection && selection.rangeCount > 0) {
-          selection.removeAllRanges()
-        }
-
-        // Remover elemento
-        setTimeout(() => {
-          if (textArea.parentNode) {
-            document.body.removeChild(textArea)
-          }
-          resolve(successful)
-        }, 100)
+        return
       }
+
+      // Para Android e desktop
+      textArea.focus()
+      textArea.select()
+      textArea.setSelectionRange(0, text.length)
+
+      // Tentar copiar
+      let successful = false
+      try {
+        successful = document.execCommand("copy")
+      } catch (execErr) {
+        console.warn("execCommand failed:", execErr)
+      }
+
+      // Limpar seleção
+      const selection = window.getSelection()
+      if (selection && selection.rangeCount > 0) {
+        selection.removeAllRanges()
+      }
+
+      // Remover elemento
+      setTimeout(() => {
+        if (textArea.parentNode) {
+          document.body.removeChild(textArea)
+        }
+        resolve(successful)
+      }, 100)
     } catch (err) {
       console.error("Failed to copy text:", err)
       resolve(false)
