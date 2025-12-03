@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Check, Copy, Lock, FileText, Eye, EyeOff } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn, copyToClipboard } from "@/lib/utils"
 import { useDarkMode } from "@/hooks/use-dark-mode"
 import { useLanguage } from "@/contexts/language-context"
 import { getTranslation, TranslationKey } from "@/lib/i18n/translations"
@@ -45,12 +45,10 @@ export function PrivateButton({ type, value, label, className, displayValue }: P
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation()
-    try {
-      await navigator.clipboard.writeText(value)
+    const success = await copyToClipboard(value)
+    if (success) {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
-      console.error("Failed to copy:", err)
     }
   }
 

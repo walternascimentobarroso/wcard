@@ -13,7 +13,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { useDarkMode } from "@/hooks/use-dark-mode"
 import { useLanguage } from "@/contexts/language-context"
 import { getTranslation } from "@/lib/i18n/translations"
-import { cn } from "@/lib/utils"
+import { cn, copyToClipboard } from "@/lib/utils"
 import { BusinessCardProps } from "@/types/contact/business-card"
 
 interface PrivateDataSectionProps {
@@ -113,12 +113,10 @@ export function BusinessCard({ contact }: BusinessCardProps) {
       }
     } else {
       // Fallback: copy to clipboard
-      try {
-        await navigator.clipboard.writeText(currentUrl)
+      const success = await copyToClipboard(currentUrl)
+      if (success) {
         setCopied(true)
         setTimeout(() => setCopied(false), 2000)
-      } catch (err) {
-        console.error("Failed to copy:", err)
       }
     }
   }
@@ -285,18 +283,7 @@ export function BusinessCard({ contact }: BusinessCardProps) {
                 <ContactButton type="website" value={contact.website} />
               )}
               {contact.address && (
-                <div className={cn(
-                  "w-full flex items-center justify-start gap-3 h-auto py-4 px-4 rounded-xl transition-all duration-200 hover:scale-[1.02] hover:shadow-lg text-white shadow-md border",
-                  isDark
-                    ? "bg-slate-700/90 hover:bg-slate-600 border-slate-600/30"
-                    : "bg-slate-600/90 hover:bg-slate-500 border-slate-500/30"
-                )}>
-                  <MapPin className="h-5 w-5 shrink-0 text-white" />
-                  <div className="flex-1 text-left">
-                    <div className="font-medium text-white">{t("address")}</div>
-                    <div className="text-xs text-white/80 mt-0.5">{contact.address}</div>
-                  </div>
-                </div>
+                <ContactButton type="address" value={contact.address} />
               )}
             </div>
           </TabsContent>

@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Check, Copy, Mail, Phone, Globe, Linkedin, Github, MessageCircle } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { Check, Copy, Mail, Phone, Globe, Linkedin, Github, MessageCircle, MapPin } from "lucide-react"
+import { cn, copyToClipboard } from "@/lib/utils"
 import { useDarkMode } from "@/hooks/use-dark-mode"
 import { useLanguage } from "@/contexts/language-context"
 import { getTranslation } from "@/lib/i18n/translations"
@@ -16,6 +16,7 @@ const iconMap: Record<ContactButtonType, typeof Mail> = {
   linkedin: Linkedin,
   github: Github,
   whatsapp: MessageCircle,
+  address: MapPin,
 }
 
 const getButtonStyles = (type: ContactButtonType, isDark: boolean) => {
@@ -38,6 +39,9 @@ const getButtonStyles = (type: ContactButtonType, isDark: boolean) => {
     github: isDark
       ? "bg-slate-700 hover:bg-slate-600 text-white shadow-md"
       : "bg-slate-700 hover:bg-slate-800 text-white shadow-md",
+    address: isDark
+      ? "bg-slate-700/90 hover:bg-slate-600 text-white shadow-md"
+      : "bg-slate-600/90 hover:bg-slate-500 text-white shadow-md",
   }
   return styles[type] || styles.email
 }
@@ -53,6 +57,7 @@ const getButtonLabel = (type: ContactButtonType, language: "pt" | "en", customLa
     website: t("visitWebsite"),
     linkedin: "LinkedIn",
     github: "GitHub",
+    address: t("address"),
   }
   return labels[type] || type
 }
@@ -68,6 +73,10 @@ export function ContactButton({ type, value, label, className }: ContactButtonPr
       window.location.href = `mailto:${value}`
     } else if (type === "phone" || type === "whatsapp") {
       window.location.href = `${type === "whatsapp" ? "https://wa.me/" : "tel:"}${value.replace(/\D/g, "")}`
+    } else if (type === "address") {
+      // Abrir no Google Maps
+      const encodedAddress = encodeURIComponent(value)
+      window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, "_blank", "noopener,noreferrer")
     } else {
       window.open(value, "_blank", "noopener,noreferrer")
     }
@@ -75,12 +84,10 @@ export function ContactButton({ type, value, label, className }: ContactButtonPr
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation()
-    try {
-      await navigator.clipboard.writeText(value)
+    const success = await copyToClipboard(value)
+    if (success) {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
-      console.error("Failed to copy:", err)
     }
   }
 

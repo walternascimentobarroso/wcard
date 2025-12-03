@@ -1,0 +1,15 @@
+---
+alwaysApply: true
+---
+
+---
+
+## Clean Code Principles
+
+* Follow the **DRY** principle by centralizing repeated logic and avoiding duplication
+* Maintain the **KISS** principle by keeping implementations simple and avoiding unnecessary complexity
+* Apply the **YAGNI** principle: implement features only when they are truly needed
+* Use **early return** to reduce nesting and improve readability
+* Do **not** use `else`; prefer guard clauses and flat code structures
+* Follow **SOLID** principles whenever possible to keep the system maintainable and extensible
+* Keep code minimal, splitting logic into smaller files/modules when appropriate
