@@ -1,101 +1,33 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Image from "next/image"
-import { QRCodeSVG } from "qrcode.react"
-import { Download, Share2, User, QrCode, MapPin, Lock } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { ContactButton } from "@/components/contact-button"
-import { PrivateButton } from "@/components/private-button"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { LanguageToggle } from "@/components/language-toggle"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { useDarkMode } from "@/hooks/use-dark-mode"
-import { useTranslation } from "@/hooks/use-translation"
 import { cn, copyToClipboard } from "@/lib/utils"
-import { generateVCard } from "@/lib/vcard"
-import { BusinessCardProps, PrivateDataSectionProps } from "@/types/contact"
-import { fetchContacts } from "@/lib/api"
-import { ApiContact } from "@/types/contact/api-contact"
-import { ContactButtonType } from "@/types/contact/contact-button"
-
-function PrivateDataSection({ contact, isDark, t }: PrivateDataSectionProps) {
-  return (
-    <div className="space-y-3">
-      {contact.password && (
-        <PrivateButton
-          type="password"
-          value={contact.password}
-          displayValue="••••••••"
-        />
-      )}
-      {contact.privateNotes && (
-        <PrivateButton
-          type="privateNotes"
-          value={contact.privateNotes}
-        />
-      )}
-      {!contact.password && !contact.privateNotes && (
-        <div className={cn(
-          "w-full p-4 rounded-xl text-center",
-          isDark ? "text-slate-400" : "text-gray-500"
-        )}>
-          {t("private")} {t("privateNotes").toLowerCase()}
-        </div>
-      )}
-    </div>
-  )
-}
+import { BusinessCardProps } from "@/types/contact"
+import { useContacts } from "@/hooks/use-contacts"
+import { CardHeader } from "./business-card/card-header"
+import { CardAvatar } from "./business-card/card-avatar"
+import { CardNameTitle } from "./business-card/card-name-title"
+import { CardBio } from "./business-card/card-bio"
+import { CardLocationLanguages } from "./business-card/card-location-languages"
+import { CardTabs } from "./business-card/card-tabs"
+import { CardActions } from "./business-card/card-actions"
+import { QRCodeModal } from "./business-card/qr-code-modal"
 
 export function BusinessCard({ contact }: BusinessCardProps) {
   const [mounted, setMounted] = useState(false)
   const [showQR, setShowQR] = useState(false)
   const [copied, setCopied] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
-  const [apiContacts, setApiContacts] = useState<ApiContact[]>([])
-  const [loading, setLoading] = useState(true)
+  const { contacts: apiContacts, loading } = useContacts()
   const isDark = useDarkMode()
-  const t = useTranslation()
 
   useEffect(() => {
     setMounted(true)
-    // Trigger animations after mount
     setTimeout(() => setIsVisible(true), 100)
   }, [])
 
-  useEffect(() => {
-    const loadContacts = async () => {
-      try {
-        setLoading(true)
-        const contacts = await fetchContacts()
-        // Sort by order_index
-        const sortedContacts = contacts.sort((a, b) => a.order_index - b.order_index)
-        setApiContacts(sortedContacts)
-      } catch (error) {
-        console.error("Error loading contacts:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadContacts()
-  }, [])
-
-  const mapApiTypeToContactType = (type: string): ContactButtonType | null => {
-    const typeMap: Record<string, ContactButtonType> = {
-      email: "email",
-      phone: "phone",
-      website: "website",
-      linkedin: "linkedin",
-      github: "github",
-      whatsapp: "whatsapp",
-      address: "address",
-    }
-    return typeMap[type.toLowerCase()] || null
-  }
-
   const currentUrl = typeof window !== "undefined" ? window.location.href : ""
-
 
   const handleShare = async () => {
     const shareData = {
@@ -116,7 +48,6 @@ export function BusinessCard({ contact }: BusinessCardProps) {
       }
     }
 
-    // Fallback: copy to clipboard
     const success = await copyToClipboard(currentUrl)
     if (success) {
       setCopied(true)
@@ -141,310 +72,29 @@ export function BusinessCard({ contact }: BusinessCardProps) {
           isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
         )}
       >
-        {/* Header with theme, language and QR code toggles */}
-        <div className="flex justify-end gap-2 mb-4">
-          <Button
-            onClick={() => setShowQR(!showQR)}
-            className={cn(
-              "relative transition-all duration-300 hover:scale-110",
-              isDark ? "text-slate-200" : "text-gray-700"
-            )}
-            variant="ghost"
-            size="icon"
-            aria-label={t("qrCode")}
-            title={t("qrCode")}
-          >
-            <QrCode className="h-5 w-5" />
-          </Button>
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
-
-        {/* Avatar */}
-        <div className={cn(
-          "flex justify-center mb-6 transition-all duration-700 delay-100",
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
-        )}>
-          <div className="relative w-32 h-32">
-            {/* Anel colorido brilhante */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 p-[3px] animate-pulse">
-              <div className={cn("w-full h-full rounded-full", isDark ? "bg-slate-900" : "bg-slate-50")}></div>
-            </div>
-            {contact.avatar ? (
-              <div className="relative w-full h-full rounded-full overflow-hidden z-10">
-                <Image
-                  src={contact.avatar}
-                  alt={contact.name}
-                  fill
-                  className="object-cover rounded-full"
-                  priority
-                />
-              </div>
-            ) : (
-              <div className="relative w-full h-full rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center z-10">
-                <User className="h-16 w-16 text-white" />
-              </div>
-            )}
-            {/* Status online */}
-            <div className={cn(
-              "absolute bottom-1 right-1 w-5 h-5 bg-green-500 rounded-full border-[3px] z-20 shadow-lg",
-              isDark ? "border-slate-900" : "border-white"
-            )}></div>
-          </div>
-        </div>
-
-        {/* Name and Title */}
-        <div className={cn(
-          "text-center mb-4 transition-all duration-700 delay-200",
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-        )}>
-          <h1 className={cn(
-            "text-3xl font-bold mb-3",
-            isDark ? "text-white" : "text-gray-900"
-          )}>
-            {contact.name}
-          </h1>
-          <div className={cn(
-            "inline-block px-4 py-1.5 rounded-full text-white text-sm font-medium mb-3 shadow-sm",
-            isDark ? "bg-blue-700" : "bg-blue-500/90"
-          )}>
-            {contact.title.toUpperCase()}
-          </div>
-        </div>
-
-        {/* Bio */}
-        <p className={cn(
-          "text-center text-sm mb-6 transition-opacity duration-700 delay-300",
-          isDark ? "text-slate-300" : "text-gray-800",
-          isVisible ? "opacity-100" : "opacity-0"
-        )}>
-          {contact.bio}
-        </p>
-
-        {/* Location and Languages */}
-        <div className={cn(
-          "flex items-center justify-center gap-6 mb-6 text-sm transition-opacity duration-700 delay-300",
-          isDark ? "text-slate-400" : "text-gray-700",
-          isVisible ? "opacity-100" : "opacity-0"
-        )}>
-          <div className="flex items-center gap-2">
-            <span>📍</span>
-            <span>{contact.location}</span>
-          </div>
-          {contact.languages.length > 0 && (
-            <div className="flex items-center gap-2">
-              <span>🌐</span>
-              <span>{contact.languages[0]}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Tabs for Public and Private data */}
-        <Tabs defaultValue="public" className={cn(
-          "mb-6 transition-all duration-700 delay-500",
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-        )}>
-          <TabsList className={cn(
-            "w-full grid grid-cols-2 p-1",
-            isDark ? "bg-slate-800/50" : "bg-slate-100/50"
-          )}>
-            <TabsTrigger 
-              value="public" 
-              className={cn(
-                "transition-all",
-                isDark 
-                  ? "data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400" 
-                  : "data-[state=active]:bg-white data-[state=active]:text-gray-900 text-gray-600"
-              )}
-            >
-              {t("public")}
-            </TabsTrigger>
-            <TabsTrigger 
-              value="private" 
-              className={cn(
-                "transition-all",
-                isDark 
-                  ? "data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400" 
-                  : "data-[state=active]:bg-white data-[state=active]:text-gray-900 text-gray-600"
-              )}
-            >
-              <Lock className="h-4 w-4 mr-2" />
-              {t("private")}
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Public Tab */}
-          <TabsContent value="public" className="mt-4">
-            <div className="space-y-3">
-              {loading ? (
-                <div className={cn(
-                  "w-full p-4 rounded-xl text-center",
-                  isDark ? "text-slate-400" : "text-gray-500"
-                )}>
-                  {t("loading")}
-                </div>
-              ) : apiContacts.filter(c => c.is_public).length > 0 ? (
-                apiContacts
-                  .filter(c => c.is_public)
-                  .map((apiContact) => {
-                    const contactType = mapApiTypeToContactType(apiContact.type)
-                    if (!contactType) return null
-                    
-                    return (
-                      <ContactButton
-                        key={apiContact.id}
-                        type={contactType}
-                        value={apiContact.value}
-                        label={apiContact.label}
-                      />
-                    )
-                  })
-              ) : (
-                // Fallback to static contact data if API returns no public contacts
-                <>
-                  {contact.email && (
-                    <ContactButton type="email" value={contact.email} />
-                  )}
-                  {(contact.phone || contact.whatsapp) && (
-                    <ContactButton type={contact.whatsapp ? "whatsapp" : "phone"} value={contact.whatsapp || contact.phone || ""} />
-                  )}
-                  {contact.website && (
-                    <ContactButton type="website" value={contact.website} />
-                  )}
-                  {contact.address && (
-                    <ContactButton type="address" value={contact.address} />
-                  )}
-                </>
-              )}
-            </div>
-          </TabsContent>
-
-          {/* Private Tab */}
-          <TabsContent value="private" className="mt-4">
-            {loading ? (
-              <div className={cn(
-                "w-full p-4 rounded-xl text-center",
-                isDark ? "text-slate-400" : "text-gray-500"
-              )}>
-                {t("loading")}
-              </div>
-            ) : apiContacts.filter(c => !c.is_public).length > 0 ? (
-              <div className="space-y-3">
-                {apiContacts
-                  .filter(c => !c.is_public)
-                  .map((apiContact) => {
-                    const typeLower = apiContact.type.toLowerCase()
-                    
-                    // Handle private notes and password as PrivateButton
-                    if (typeLower === "password" || typeLower === "privatenotes" || typeLower === "private_notes") {
-                      return (
-                        <PrivateButton
-                          key={apiContact.id}
-                          type={typeLower === "password" ? "password" : "privateNotes"}
-                          value={apiContact.value}
-                          label={apiContact.label}
-                          displayValue={typeLower === "password" ? "••••••••" : undefined}
-                        />
-                      )
-                    }
-                    
-                    // Handle other types as ContactButton if mappable
-                    const contactType = mapApiTypeToContactType(apiContact.type)
-                    if (contactType) {
-                      return (
-                        <ContactButton
-                          key={apiContact.id}
-                          type={contactType}
-                          value={apiContact.value}
-                          label={apiContact.label}
-                        />
-                      )
-                    }
-                    
-                    // Fallback: render as generic private button if type is not recognized
-                    return (
-                      <PrivateButton
-                        key={apiContact.id}
-                        type="privateNotes"
-                        value={apiContact.value}
-                        label={apiContact.label || apiContact.type}
-                      />
-                    )
-                  })}
-              </div>
-            ) : (
-              <PrivateDataSection contact={contact} isDark={isDark} t={t} />
-            )}
-          </TabsContent>
-        </Tabs>
-
-        {/* Action Buttons */}
-        <div className={cn(
-          "flex gap-3 transition-opacity duration-700 delay-700",
-          isVisible ? "opacity-100" : "opacity-0"
-        )}>
-          <Button
-            onClick={() => generateVCard(contact)}
-            className={cn(
-              "flex-1 glass border transition-all duration-200 font-medium",
-              isDark
-                ? "bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700"
-                : "bg-white/70 border-slate-300/50 text-gray-900 hover:bg-white/90"
-            )}
-            variant="outline"
-          >
-            <Download className={cn("h-4 w-4 mr-2", isDark ? "text-slate-200" : "text-gray-900")} />
-            {t("saveContact")}
-          </Button>
-          <Button
-            onClick={handleShare}
-            className={cn(
-              "flex-1 glass border text-white transition-all duration-200 font-medium",
-              isDark
-                ? "bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700"
-                : "bg-white/70 border-slate-300/50 text-gray-900 hover:bg-white/90"
-            )}
-          >
-            <Share2 className="h-4 w-4 mr-2" />
-            {copied ? t("copied") : t("share")}
-          </Button>
-        </div>
-
-        {/* QR Code Modal */}
-        {showQR && (
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300"
-            onClick={() => setShowQR(false)}
-          >
-            <div
-              className={cn(
-                "rounded-2xl p-8 border-2 transition-all duration-300 scale-100",
-                isDark
-                  ? "border-slate-600 bg-slate-800"
-                  : "border-slate-300 bg-white"
-              )}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className={cn(
-                "text-xl font-semibold mb-4 text-center",
-                isDark ? "text-white" : "text-gray-900"
-              )}>
-                {t("qrCode")}
-              </h3>
-              <div className="bg-white p-4 rounded-lg">
-                <QRCodeSVG value={currentUrl} size={256} />
-              </div>
-              <p className={cn(
-                "text-sm text-center mt-4",
-                isDark ? "text-slate-400" : "text-gray-800"
-              )}>
-                {t("scanToAccess")}
-              </p>
-            </div>
-          </div>
-        )}
+        <CardHeader onQRClick={() => setShowQR(!showQR)} />
+        <CardAvatar contact={contact} isDark={isDark} isVisible={isVisible} />
+        <CardNameTitle contact={contact} isDark={isDark} isVisible={isVisible} />
+        <CardBio contact={contact} isDark={isDark} isVisible={isVisible} />
+        <CardLocationLanguages contact={contact} isDark={isDark} isVisible={isVisible} />
+        <CardTabs 
+          contact={contact} 
+          apiContacts={apiContacts} 
+          loading={loading} 
+          isVisible={isVisible} 
+        />
+        <CardActions 
+          contact={contact} 
+          copied={copied} 
+          onShare={handleShare} 
+          isVisible={isVisible} 
+        />
+        <QRCodeModal 
+          isOpen={showQR} 
+          url={currentUrl} 
+          onClose={() => setShowQR(false)} 
+        />
       </div>
     </div>
   )
 }
-
