@@ -26,7 +26,6 @@ const CONTACT_TYPES = [
   { value: "address", label: "Endereço" },
   { value: "password", label: "Senha" },
   { value: "privateNotes", label: "Notas Privadas" },
-  { value: "private_notes", label: "Notas Privadas (alternativo)" },
 ] as const
 
 export const EditContactModal = ({ isOpen, contact, onClose, onSave }: EditContactModalProps) => {

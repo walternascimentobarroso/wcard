@@ -1,5 +1,6 @@
 "use client"
 
+import { Fragment } from "react"
 import { Lock } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ContactButton } from "@/components/contact-button"
@@ -9,7 +10,7 @@ import { useTranslation } from "@/hooks/use-translation"
 import { cn } from "@/lib/utils"
 import { ContactInfo, PrivateDataSectionProps } from "@/types/contact"
 import { ApiContact } from "@/types/contact/api-contact"
-import { mapApiTypeToContactType, isPrivateType, getPrivateButtonType } from "@/lib/contact-mapper"
+import { mapApiTypeToContactType } from "@/lib/contact-mapper"
 
 interface CardTabsProps {
   contact: ContactInfo
@@ -56,6 +57,52 @@ const LoadingState = ({ isDark, t }: { isDark: boolean; t: ReturnType<typeof use
   </div>
 )
 
+const renderContactItem = (
+  apiContact: ApiContact,
+  onEditContact?: (contactId: number) => void
+) => {
+  const typeLower = apiContact.type.toLowerCase()
+  
+  // Se for password ou privateNotes, usar PrivateButton
+  if (typeLower === "password" || typeLower === "privatenotes" || typeLower === "private_notes") {
+    return (
+      <PrivateButton
+        type={typeLower === "password" ? "password" : "privateNotes"}
+        value={apiContact.value}
+        label={apiContact.label}
+        displayValue={typeLower === "password" ? "••••••••" : undefined}
+        contactId={apiContact.id}
+        onEdit={onEditContact}
+      />
+    )
+  }
+  
+  // Tentar mapear para ContactButton
+  const contactType = mapApiTypeToContactType(apiContact.type)
+  if (contactType) {
+    return (
+      <ContactButton
+        type={contactType}
+        value={apiContact.value}
+        label={apiContact.label}
+        contactId={apiContact.id}
+        onEdit={onEditContact}
+      />
+    )
+  }
+  
+  // Fallback: usar PrivateButton como padrão
+  return (
+    <PrivateButton
+      type="privateNotes"
+      value={apiContact.value}
+      label={apiContact.label || apiContact.type}
+      contactId={apiContact.id}
+      onEdit={onEditContact}
+    />
+  )
+}
+
 const PublicContactsList = ({ 
   apiContacts, 
   contact,
@@ -65,7 +112,7 @@ const PublicContactsList = ({
   contact: ContactInfo
   onEditContact?: (contactId: number) => void
 }) => {
-  const publicContacts = apiContacts.filter(c => c.is_public)
+  const publicContacts = apiContacts.filter(c => c.is_public === true || c.is_public === "true")
   
   if (publicContacts.length === 0) {
     return (
@@ -84,23 +131,13 @@ const PublicContactsList = ({
   }
 
   return (
-    <>
-      {publicContacts.map((apiContact) => {
-        const contactType = mapApiTypeToContactType(apiContact.type)
-        if (!contactType) return null
-        
-        return (
-          <ContactButton
-            key={apiContact.id}
-            type={contactType}
-            value={apiContact.value}
-            label={apiContact.label}
-            contactId={apiContact.id}
-            onEdit={onEditContact}
-          />
-        )
-      })}
-    </>
+    <div className="space-y-3">
+      {publicContacts.map((apiContact) => (
+        <Fragment key={apiContact.id}>
+          {renderContactItem(apiContact, onEditContact)}
+        </Fragment>
+      ))}
+    </div>
   )
 }
 
@@ -115,7 +152,7 @@ const PrivateContactsList = ({
 }) => {
   const isDark = useDarkMode()
   const t = useTranslation()
-  const privateContacts = apiContacts.filter(c => !c.is_public)
+  const privateContacts = apiContacts.filter(c => c.is_public === false || c.is_public === "false" || !c.is_public)
 
   if (privateContacts.length === 0) {
     return <PrivateDataSection contact={contact} isDark={isDark} t={t} />
@@ -123,48 +160,11 @@ const PrivateContactsList = ({
 
   return (
     <div className="space-y-3">
-      {privateContacts.map((apiContact) => {
-        const typeLower = apiContact.type.toLowerCase()
-        
-        if (isPrivateType(apiContact.type)) {
-          return (
-            <PrivateButton
-              key={apiContact.id}
-              type={getPrivateButtonType(apiContact.type)}
-              value={apiContact.value}
-              label={apiContact.label}
-              displayValue={typeLower === "password" ? "••••••••" : undefined}
-              contactId={apiContact.id}
-              onEdit={onEditContact}
-            />
-          )
-        }
-        
-        const contactType = mapApiTypeToContactType(apiContact.type)
-        if (contactType) {
-          return (
-            <ContactButton
-              key={apiContact.id}
-              type={contactType}
-              value={apiContact.value}
-              label={apiContact.label}
-              contactId={apiContact.id}
-              onEdit={onEditContact}
-            />
-          )
-        }
-        
-        return (
-          <PrivateButton
-            key={apiContact.id}
-            type="privateNotes"
-            value={apiContact.value}
-            label={apiContact.label || apiContact.type}
-            contactId={apiContact.id}
-            onEdit={onEditContact}
-          />
-        )
-      })}
+      {privateContacts.map((apiContact) => (
+        <Fragment key={apiContact.id}>
+          {renderContactItem(apiContact, onEditContact)}
+        </Fragment>
+      ))}
     </div>
   )
 }
