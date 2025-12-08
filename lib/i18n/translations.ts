@@ -23,6 +23,7 @@ export const translations = {
     visitWebsite: "Visitar Website",
     showValue: "Mostrar valor",
     hideValue: "Ocultar valor",
+    loading: "Carregando...",
   },
   en: {
     email: "Email",
@@ -46,6 +47,7 @@ export const translations = {
     visitWebsite: "Visit Website",
     showValue: "Show value",
     hideValue: "Hide value",
+    loading: "Loading...",
   },
 } as const
 

@@ -15,6 +15,9 @@ import { useTranslation } from "@/hooks/use-translation"
 import { cn, copyToClipboard } from "@/lib/utils"
 import { generateVCard } from "@/lib/vcard"
 import { BusinessCardProps, PrivateDataSectionProps } from "@/types/contact"
+import { fetchContacts } from "@/lib/api"
+import { ApiContact } from "@/types/contact/api-contact"
+import { ContactButtonType } from "@/types/contact/contact-button"
 
 function PrivateDataSection({ contact, isDark, t }: PrivateDataSectionProps) {
   return (
@@ -49,6 +52,8 @@ export function BusinessCard({ contact }: BusinessCardProps) {
   const [showQR, setShowQR] = useState(false)
   const [copied, setCopied] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
+  const [apiContacts, setApiContacts] = useState<ApiContact[]>([])
+  const [loading, setLoading] = useState(true)
   const isDark = useDarkMode()
   const t = useTranslation()
 
@@ -57,6 +62,37 @@ export function BusinessCard({ contact }: BusinessCardProps) {
     // Trigger animations after mount
     setTimeout(() => setIsVisible(true), 100)
   }, [])
+
+  useEffect(() => {
+    const loadContacts = async () => {
+      try {
+        setLoading(true)
+        const contacts = await fetchContacts()
+        // Sort by order_index
+        const sortedContacts = contacts.sort((a, b) => a.order_index - b.order_index)
+        setApiContacts(sortedContacts)
+      } catch (error) {
+        console.error("Error loading contacts:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadContacts()
+  }, [])
+
+  const mapApiTypeToContactType = (type: string): ContactButtonType | null => {
+    const typeMap: Record<string, ContactButtonType> = {
+      email: "email",
+      phone: "phone",
+      website: "website",
+      linkedin: "linkedin",
+      github: "github",
+      whatsapp: "whatsapp",
+      address: "address",
+    }
+    return typeMap[type.toLowerCase()] || null
+  }
 
   const currentUrl = typeof window !== "undefined" ? window.location.href : ""
 
@@ -240,24 +276,105 @@ export function BusinessCard({ contact }: BusinessCardProps) {
           {/* Public Tab */}
           <TabsContent value="public" className="mt-4">
             <div className="space-y-3">
-              {contact.email && (
-                <ContactButton type="email" value={contact.email} />
-              )}
-              {(contact.phone || contact.whatsapp) && (
-                <ContactButton type={contact.whatsapp ? "whatsapp" : "phone"} value={contact.whatsapp || contact.phone || ""} />
-              )}
-              {contact.website && (
-                <ContactButton type="website" value={contact.website} />
-              )}
-              {contact.address && (
-                <ContactButton type="address" value={contact.address} />
+              {loading ? (
+                <div className={cn(
+                  "w-full p-4 rounded-xl text-center",
+                  isDark ? "text-slate-400" : "text-gray-500"
+                )}>
+                  {t("loading")}
+                </div>
+              ) : apiContacts.filter(c => c.is_public).length > 0 ? (
+                apiContacts
+                  .filter(c => c.is_public)
+                  .map((apiContact) => {
+                    const contactType = mapApiTypeToContactType(apiContact.type)
+                    if (!contactType) return null
+                    
+                    return (
+                      <ContactButton
+                        key={apiContact.id}
+                        type={contactType}
+                        value={apiContact.value}
+                        label={apiContact.label}
+                      />
+                    )
+                  })
+              ) : (
+                // Fallback to static contact data if API returns no public contacts
+                <>
+                  {contact.email && (
+                    <ContactButton type="email" value={contact.email} />
+                  )}
+                  {(contact.phone || contact.whatsapp) && (
+                    <ContactButton type={contact.whatsapp ? "whatsapp" : "phone"} value={contact.whatsapp || contact.phone || ""} />
+                  )}
+                  {contact.website && (
+                    <ContactButton type="website" value={contact.website} />
+                  )}
+                  {contact.address && (
+                    <ContactButton type="address" value={contact.address} />
+                  )}
+                </>
               )}
             </div>
           </TabsContent>
 
           {/* Private Tab */}
           <TabsContent value="private" className="mt-4">
-            <PrivateDataSection contact={contact} isDark={isDark} t={t} />
+            {loading ? (
+              <div className={cn(
+                "w-full p-4 rounded-xl text-center",
+                isDark ? "text-slate-400" : "text-gray-500"
+              )}>
+                {t("loading")}
+              </div>
+            ) : apiContacts.filter(c => !c.is_public).length > 0 ? (
+              <div className="space-y-3">
+                {apiContacts
+                  .filter(c => !c.is_public)
+                  .map((apiContact) => {
+                    const typeLower = apiContact.type.toLowerCase()
+                    
+                    // Handle private notes and password as PrivateButton
+                    if (typeLower === "password" || typeLower === "privatenotes" || typeLower === "private_notes") {
+                      return (
+                        <PrivateButton
+                          key={apiContact.id}
+                          type={typeLower === "password" ? "password" : "privateNotes"}
+                          value={apiContact.value}
+                          label={apiContact.label}
+                          displayValue={typeLower === "password" ? "••••••••" : undefined}
+                        />
+                      )
+                    }
+                    
+                    // Handle other types as ContactButton if mappable
+                    const contactType = mapApiTypeToContactType(apiContact.type)
+                    if (contactType) {
+                      return (
+                        <ContactButton
+                          key={apiContact.id}
+                          type={contactType}
+                          value={apiContact.value}
+                          label={apiContact.label}
+                        />
+                      )
+                    }
+                    
+                    // Fallback: render as generic private button if type is not recognized
+                    return (
+                      <PrivateButton
+                        key={apiContact.id}
+                        type="privateNotes"
+                        value={apiContact.value}
+                        label={apiContact.label || apiContact.type}
+                      />
+                    )
+                  })}
+              </div>
+            ) : (
+              <PrivateDataSection contact={contact} isDark={isDark} t={t} />
+            )}
           </TabsContent>
         </Tabs>
 
