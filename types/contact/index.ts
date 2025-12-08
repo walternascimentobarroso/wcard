@@ -3,4 +3,5 @@ export { BusinessCardProps } from "./business-card"
 export { ContactButtonProps, ContactButtonType } from "./contact-button"
 export { PrivateDataSectionProps } from "./private-data-section"
 export { ApiContact } from "./api-contact"
+export { UpdateContactPayload } from "./update-contact"
 

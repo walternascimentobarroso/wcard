@@ -16,6 +16,7 @@ interface CardTabsProps {
   apiContacts: ApiContact[]
   loading: boolean
   isVisible: boolean
+  onEditContact?: (contactId: number) => void
 }
 
 function PrivateDataSection({ contact, isDark, t }: PrivateDataSectionProps) {
@@ -57,10 +58,12 @@ const LoadingState = ({ isDark, t }: { isDark: boolean; t: ReturnType<typeof use
 
 const PublicContactsList = ({ 
   apiContacts, 
-  contact 
+  contact,
+  onEditContact
 }: { 
   apiContacts: ApiContact[]
-  contact: ContactInfo 
+  contact: ContactInfo
+  onEditContact?: (contactId: number) => void
 }) => {
   const publicContacts = apiContacts.filter(c => c.is_public)
   
@@ -92,6 +95,8 @@ const PublicContactsList = ({
             type={contactType}
             value={apiContact.value}
             label={apiContact.label}
+            contactId={apiContact.id}
+            onEdit={onEditContact}
           />
         )
       })}
@@ -101,10 +106,12 @@ const PublicContactsList = ({
 
 const PrivateContactsList = ({ 
   apiContacts, 
-  contact 
+  contact,
+  onEditContact
 }: { 
   apiContacts: ApiContact[]
-  contact: ContactInfo 
+  contact: ContactInfo
+  onEditContact?: (contactId: number) => void
 }) => {
   const isDark = useDarkMode()
   const t = useTranslation()
@@ -127,6 +134,8 @@ const PrivateContactsList = ({
               value={apiContact.value}
               label={apiContact.label}
               displayValue={typeLower === "password" ? "••••••••" : undefined}
+              contactId={apiContact.id}
+              onEdit={onEditContact}
             />
           )
         }
@@ -139,6 +148,8 @@ const PrivateContactsList = ({
               type={contactType}
               value={apiContact.value}
               label={apiContact.label}
+              contactId={apiContact.id}
+              onEdit={onEditContact}
             />
           )
         }
@@ -149,6 +160,8 @@ const PrivateContactsList = ({
             type="privateNotes"
             value={apiContact.value}
             label={apiContact.label || apiContact.type}
+            contactId={apiContact.id}
+            onEdit={onEditContact}
           />
         )
       })}
@@ -156,7 +169,7 @@ const PrivateContactsList = ({
   )
 }
 
-export const CardTabs = ({ contact, apiContacts, loading, isVisible }: CardTabsProps) => {
+export const CardTabs = ({ contact, apiContacts, loading, isVisible, onEditContact }: CardTabsProps) => {
   const isDark = useDarkMode()
   const t = useTranslation()
 
@@ -199,7 +212,7 @@ export const CardTabs = ({ contact, apiContacts, loading, isVisible }: CardTabsP
           {loading ? (
             <LoadingState isDark={isDark} t={t} />
           ) : (
-            <PublicContactsList apiContacts={apiContacts} contact={contact} />
+            <PublicContactsList apiContacts={apiContacts} contact={contact} onEditContact={onEditContact} />
           )}
         </div>
       </TabsContent>
@@ -208,7 +221,7 @@ export const CardTabs = ({ contact, apiContacts, loading, isVisible }: CardTabsP
         {loading ? (
           <LoadingState isDark={isDark} t={t} />
         ) : (
-          <PrivateContactsList apiContacts={apiContacts} contact={contact} />
+          <PrivateContactsList apiContacts={apiContacts} contact={contact} onEditContact={onEditContact} />
         )}
       </TabsContent>
     </Tabs>

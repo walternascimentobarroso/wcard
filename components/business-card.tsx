@@ -5,6 +5,9 @@ import { useDarkMode } from "@/hooks/use-dark-mode"
 import { cn, copyToClipboard } from "@/lib/utils"
 import { BusinessCardProps } from "@/types/contact"
 import { useContacts } from "@/hooks/use-contacts"
+import { updateContact } from "@/lib/api"
+import { UpdateContactPayload } from "@/types/contact/update-contact"
+import { ApiContact } from "@/types/contact/api-contact"
 import { CardHeader } from "./business-card/card-header"
 import { CardAvatar } from "./business-card/card-avatar"
 import { CardNameTitle } from "./business-card/card-name-title"
@@ -13,13 +16,15 @@ import { CardLocationLanguages } from "./business-card/card-location-languages"
 import { CardTabs } from "./business-card/card-tabs"
 import { CardActions } from "./business-card/card-actions"
 import { QRCodeModal } from "./business-card/qr-code-modal"
+import { EditContactModal } from "./edit-contact-modal"
 
 export function BusinessCard({ contact }: BusinessCardProps) {
   const [mounted, setMounted] = useState(false)
   const [showQR, setShowQR] = useState(false)
   const [copied, setCopied] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
-  const { contacts: apiContacts, loading } = useContacts()
+  const [editingContact, setEditingContact] = useState<ApiContact | null>(null)
+  const { contacts: apiContacts, loading, refresh } = useContacts()
   const isDark = useDarkMode()
 
   useEffect(() => {
@@ -55,6 +60,19 @@ export function BusinessCard({ contact }: BusinessCardProps) {
     }
   }
 
+  const handleEditContact = (contactId: number) => {
+    const contactToEdit = apiContacts.find(c => c.id === contactId)
+    if (contactToEdit) {
+      setEditingContact(contactToEdit)
+    }
+  }
+
+  const handleSaveContact = async (contactId: number, payload: UpdateContactPayload) => {
+    await updateContact(contactId, payload)
+    await refresh()
+    setEditingContact(null)
+  }
+
   if (!mounted) {
     return null
   }
@@ -81,7 +99,8 @@ export function BusinessCard({ contact }: BusinessCardProps) {
           contact={contact} 
           apiContacts={apiContacts} 
           loading={loading} 
-          isVisible={isVisible} 
+          isVisible={isVisible}
+          onEditContact={handleEditContact}
         />
         <CardActions 
           contact={contact} 
@@ -93,6 +112,12 @@ export function BusinessCard({ contact }: BusinessCardProps) {
           isOpen={showQR} 
           url={currentUrl} 
           onClose={() => setShowQR(false)} 
+        />
+        <EditContactModal
+          isOpen={editingContact !== null}
+          contact={editingContact}
+          onClose={() => setEditingContact(null)}
+          onSave={handleSaveContact}
         />
       </div>
     </div>

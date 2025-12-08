@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Check, Copy, Lock, FileText, Eye, EyeOff } from "lucide-react"
+import { Check, Copy, Pencil, Lock, FileText, Eye, EyeOff } from "lucide-react"
 import { cn, copyToClipboard } from "@/lib/utils"
 import { useDarkMode } from "@/hooks/use-dark-mode"
 import { useTranslation } from "@/hooks/use-translation"
@@ -34,7 +34,7 @@ const getButtonLabel = (type: PrivateButtonType, t: ReturnType<typeof useTransla
   return labels[type] || type
 }
 
-export function PrivateButton({ type, value, label, className, displayValue }: PrivateButtonProps) {
+export function PrivateButton({ type, value, label, className, displayValue, contactId, onEdit }: PrivateButtonProps) {
   const [copied, setCopied] = useState(false)
   const [showValue, setShowValue] = useState(false)
   const isDark = useDarkMode()
@@ -53,6 +53,13 @@ export function PrivateButton({ type, value, label, className, displayValue }: P
   const handleToggleVisibility = (e: React.MouseEvent) => {
     e.stopPropagation()
     setShowValue(!showValue)
+  }
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (contactId && onEdit) {
+      onEdit(contactId)
+    }
   }
 
   const displayedValue = displayValue !== undefined 
@@ -96,6 +103,20 @@ export function PrivateButton({ type, value, label, className, displayValue }: P
             ) : (
               <Eye className="h-4 w-4" />
             )}
+          </button>
+        )}
+        {contactId && onEdit && (
+          <button
+            onClick={handleEdit}
+            className={cn(
+              "p-1.5 rounded-md transition-all duration-200",
+              "hover:bg-white/20",
+              "flex items-center justify-center text-white"
+            )}
+            aria-label="Edit contact"
+            title={t("editContact") || "Editar"}
+          >
+            <Pencil className="h-4 w-4" />
           </button>
         )}
         <button

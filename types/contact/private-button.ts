@@ -6,5 +6,7 @@ export interface PrivateButtonProps {
   label?: string
   className?: string
   displayValue?: string // Para senha, pode mostrar "••••••••" enquanto o value real é copiado
+  contactId?: number
+  onEdit?: (contactId: number) => void
 }
 

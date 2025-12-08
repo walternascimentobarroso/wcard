@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Check, Copy, Mail, Phone, Globe, Linkedin, Github, MessageCircle, MapPin } from "lucide-react"
+import { Check, Copy, Pencil, Mail, Phone, Globe, Linkedin, Github, MessageCircle, MapPin } from "lucide-react"
 import { cn, copyToClipboard } from "@/lib/utils"
 import { useDarkMode } from "@/hooks/use-dark-mode"
 import { useTranslation } from "@/hooks/use-translation"
@@ -60,7 +60,7 @@ const getButtonLabel = (type: ContactButtonType, t: ReturnType<typeof useTransla
   return labels[type] || type
 }
 
-export function ContactButton({ type, value, label, className }: ContactButtonProps) {
+export function ContactButton({ type, value, label, className, contactId, onEdit }: ContactButtonProps) {
   const [copied, setCopied] = useState(false)
   const isDark = useDarkMode()
   const t = useTranslation()
@@ -95,6 +95,13 @@ export function ContactButton({ type, value, label, className }: ContactButtonPr
     }
   }
 
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (contactId && onEdit) {
+      onEdit(contactId)
+    }
+  }
+
   return (
     <div className="relative group">
       <button
@@ -112,21 +119,37 @@ export function ContactButton({ type, value, label, className }: ContactButtonPr
           <div className="text-xs text-white/80 mt-0.5">{value}</div>
         </div>
       </button>
-      <button
-        onClick={handleCopy}
-        className={cn(
-          "absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-md transition-all duration-200",
-          "opacity-100 hover:bg-white/20",
-          "flex items-center justify-center text-white"
+      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-100 transition-all duration-200">
+        {contactId && onEdit && (
+          <button
+            onClick={handleEdit}
+            className={cn(
+              "p-1.5 rounded-md transition-all duration-200",
+              "hover:bg-white/20",
+              "flex items-center justify-center text-white"
+            )}
+            aria-label="Edit contact"
+            title={t("editContact") || "Editar"}
+          >
+            <Pencil className="h-4 w-4" />
+          </button>
         )}
-        aria-label="Copy to clipboard"
-      >
-        {copied ? (
-          <Check className="h-4 w-4 text-green-300" />
-        ) : (
-          <Copy className="h-4 w-4" />
-        )}
-      </button>
+        <button
+          onClick={handleCopy}
+          className={cn(
+            "p-1.5 rounded-md transition-all duration-200",
+            "hover:bg-white/20",
+            "flex items-center justify-center text-white"
+          )}
+          aria-label="Copy to clipboard"
+        >
+          {copied ? (
+            <Check className="h-4 w-4 text-green-300" />
+          ) : (
+            <Copy className="h-4 w-4" />
+          )}
+        </button>
+      </div>
     </div>
   )
 }

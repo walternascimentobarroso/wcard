@@ -5,5 +5,7 @@ export interface ContactButtonProps {
   value: string
   label?: string
   className?: string
+  contactId?: number
+  onEdit?: (contactId: number) => void
 }
 
