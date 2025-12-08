@@ -5,7 +5,7 @@ import { useDarkMode } from "@/hooks/use-dark-mode"
 import { cn, copyToClipboard } from "@/lib/utils"
 import { BusinessCardProps } from "@/types/contact"
 import { useContacts } from "@/hooks/use-contacts"
-import { updateContact } from "@/lib/api"
+import { updateContact, createContact } from "@/lib/api"
 import { UpdateContactPayload } from "@/types/contact/update-contact"
 import { ApiContact } from "@/types/contact/api-contact"
 import { CardHeader } from "./business-card/card-header"
@@ -17,6 +17,7 @@ import { CardTabs } from "./business-card/card-tabs"
 import { CardActions } from "./business-card/card-actions"
 import { QRCodeModal } from "./business-card/qr-code-modal"
 import { EditContactModal } from "./edit-contact-modal"
+import { CreateContactModal } from "./create-contact-modal"
 
 export function BusinessCard({ contact }: BusinessCardProps) {
   const [mounted, setMounted] = useState(false)
@@ -24,6 +25,7 @@ export function BusinessCard({ contact }: BusinessCardProps) {
   const [copied, setCopied] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [editingContact, setEditingContact] = useState<ApiContact | null>(null)
+  const [showCreateModal, setShowCreateModal] = useState(false)
   const { contacts: apiContacts, loading, refresh } = useContacts()
   const isDark = useDarkMode()
 
@@ -73,6 +75,12 @@ export function BusinessCard({ contact }: BusinessCardProps) {
     setEditingContact(null)
   }
 
+  const handleCreateContact = async (payload: UpdateContactPayload) => {
+    await createContact(payload)
+    await refresh()
+    setShowCreateModal(false)
+  }
+
   if (!mounted) {
     return null
   }
@@ -101,6 +109,7 @@ export function BusinessCard({ contact }: BusinessCardProps) {
           loading={loading} 
           isVisible={isVisible}
           onEditContact={handleEditContact}
+          onCreateContact={() => setShowCreateModal(true)}
         />
         <CardActions 
           contact={contact} 
@@ -118,6 +127,11 @@ export function BusinessCard({ contact }: BusinessCardProps) {
           contact={editingContact}
           onClose={() => setEditingContact(null)}
           onSave={handleSaveContact}
+        />
+        <CreateContactModal
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onCreate={handleCreateContact}
         />
       </div>
     </div>

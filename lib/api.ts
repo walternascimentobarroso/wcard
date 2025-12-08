@@ -44,3 +44,26 @@ export const updateContact = async (
   }
 }
 
+export const createContact = async (
+  payload: UpdateContactPayload
+): Promise<ApiContact> => {
+  try {
+    const response = await fetch(`${API_URL}/api/contacts/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+    
+    if (!response.ok) {
+      throw new Error(`Failed to create contact: ${response.statusText}`)
+    }
+    
+    return await response.json()
+  } catch (error) {
+    console.error("Error creating contact:", error)
+    throw error
+  }
+}
+

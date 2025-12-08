@@ -34,6 +34,9 @@ export const translations = {
     save: "Salvar",
     saving: "Salvando...",
     selectType: "Selecione um tipo",
+    createContact: "Criar Contato",
+    create: "Criar",
+    creating: "Criando...",
   },
   en: {
     email: "Email",
@@ -68,6 +71,9 @@ export const translations = {
     save: "Save",
     saving: "Saving...",
     selectType: "Select a type",
+    createContact: "Create Contact",
+    create: "Create",
+    creating: "Creating...",
   },
 } as const
 

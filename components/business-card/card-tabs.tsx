@@ -18,6 +18,7 @@ interface CardTabsProps {
   loading: boolean
   isVisible: boolean
   onEditContact?: (contactId: number) => void
+  onCreateContact?: () => void
 }
 
 function PrivateDataSection({ contact, isDark, t }: PrivateDataSectionProps) {
@@ -106,11 +107,13 @@ const renderContactItem = (
 const PublicContactsList = ({ 
   apiContacts, 
   contact,
-  onEditContact
+  onEditContact,
+  onCreateContact
 }: { 
   apiContacts: ApiContact[]
   contact: ContactInfo
   onEditContact?: (contactId: number) => void
+  onCreateContact?: () => void
 }) => {
   const publicContacts = apiContacts.filter(c => c.is_public === true || c.is_public === "true")
   
@@ -130,6 +133,9 @@ const PublicContactsList = ({
     )
   }
 
+  const t = useTranslation()
+  const isDark = useDarkMode()
+
   return (
     <div className="space-y-3">
       {publicContacts.map((apiContact) => (
@@ -137,6 +143,21 @@ const PublicContactsList = ({
           {renderContactItem(apiContact, onEditContact)}
         </Fragment>
       ))}
+      {onCreateContact && (
+        <button
+          onClick={onCreateContact}
+          className={cn(
+            "w-full flex items-center justify-center gap-2 h-auto py-4 px-4 rounded-xl transition-all duration-200",
+            "hover:scale-[1.02] hover:shadow-lg border-2 border-dashed",
+            isDark
+              ? "border-slate-600 text-slate-400 hover:border-slate-500 hover:text-slate-300"
+              : "border-slate-300 text-gray-500 hover:border-slate-400 hover:text-gray-700"
+          )}
+        >
+          <span className="text-2xl">+</span>
+          <span className="font-medium">{t("createContact") || "Criar Contato"}</span>
+        </button>
+      )}
     </div>
   )
 }
@@ -144,11 +165,13 @@ const PublicContactsList = ({
 const PrivateContactsList = ({ 
   apiContacts, 
   contact,
-  onEditContact
+  onEditContact,
+  onCreateContact
 }: { 
   apiContacts: ApiContact[]
   contact: ContactInfo
   onEditContact?: (contactId: number) => void
+  onCreateContact?: () => void
 }) => {
   const isDark = useDarkMode()
   const t = useTranslation()
@@ -165,11 +188,26 @@ const PrivateContactsList = ({
           {renderContactItem(apiContact, onEditContact)}
         </Fragment>
       ))}
+      {onCreateContact && (
+        <button
+          onClick={onCreateContact}
+          className={cn(
+            "w-full flex items-center justify-center gap-2 h-auto py-4 px-4 rounded-xl transition-all duration-200",
+            "hover:scale-[1.02] hover:shadow-lg border-2 border-dashed",
+            isDark
+              ? "border-slate-600 text-slate-400 hover:border-slate-500 hover:text-slate-300"
+              : "border-slate-300 text-gray-500 hover:border-slate-400 hover:text-gray-700"
+          )}
+        >
+          <span className="text-2xl">+</span>
+          <span className="font-medium">{t("createContact") || "Criar Contato"}</span>
+        </button>
+      )}
     </div>
   )
 }
 
-export const CardTabs = ({ contact, apiContacts, loading, isVisible, onEditContact }: CardTabsProps) => {
+export const CardTabs = ({ contact, apiContacts, loading, isVisible, onEditContact, onCreateContact }: CardTabsProps) => {
   const isDark = useDarkMode()
   const t = useTranslation()
 
@@ -212,7 +250,7 @@ export const CardTabs = ({ contact, apiContacts, loading, isVisible, onEditConta
           {loading ? (
             <LoadingState isDark={isDark} t={t} />
           ) : (
-            <PublicContactsList apiContacts={apiContacts} contact={contact} onEditContact={onEditContact} />
+            <PublicContactsList apiContacts={apiContacts} contact={contact} onEditContact={onEditContact} onCreateContact={onCreateContact} />
           )}
         </div>
       </TabsContent>
@@ -221,7 +259,7 @@ export const CardTabs = ({ contact, apiContacts, loading, isVisible, onEditConta
         {loading ? (
           <LoadingState isDark={isDark} t={t} />
         ) : (
-          <PrivateContactsList apiContacts={apiContacts} contact={contact} onEditContact={onEditContact} />
+          <PrivateContactsList apiContacts={apiContacts} contact={contact} onEditContact={onEditContact} onCreateContact={onCreateContact} />
         )}
       </TabsContent>
     </Tabs>
