@@ -37,6 +37,13 @@ export const translations = {
     createContact: "Criar Contato",
     create: "Criar",
     creating: "Criando...",
+    documents: "Documentos",
+    addDocument: "Adicionar Documento",
+    noDocuments: "Nenhum documento",
+    download: "Baixar",
+    remove: "Remover",
+    uploading: "Enviando...",
+    confirmDeleteDocument: "Tem certeza que deseja remover este documento?",
   },
   en: {
     email: "Email",
@@ -74,6 +81,13 @@ export const translations = {
     createContact: "Create Contact",
     create: "Create",
     creating: "Creating...",
+    documents: "Documents",
+    addDocument: "Add Document",
+    noDocuments: "No documents",
+    download: "Download",
+    remove: "Remove",
+    uploading: "Uploading...",
+    confirmDeleteDocument: "Are you sure you want to remove this document?",
   },
 } as const
 

@@ -1,15 +1,17 @@
 "use client"
 
 import { Fragment } from "react"
-import { Lock } from "lucide-react"
+import { Lock, FileText } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ContactButton } from "@/components/contact-button"
 import { PrivateButton } from "@/components/private-button"
+import { DocumentsList } from "./documents-list"
 import { useDarkMode } from "@/hooks/use-dark-mode"
 import { useTranslation } from "@/hooks/use-translation"
 import { cn } from "@/lib/utils"
 import { ContactInfo, PrivateDataSectionProps } from "@/types/contact"
 import { ApiContact } from "@/types/contact/api-contact"
+import { ApiDocument } from "@/types/document"
 import { mapApiTypeToContactType } from "@/lib/contact-mapper"
 
 interface CardTabsProps {
@@ -19,6 +21,10 @@ interface CardTabsProps {
   isVisible: boolean
   onEditContact?: (contactId: number) => void
   onCreateContact?: () => void
+  documents?: ApiDocument[]
+  documentsLoading?: boolean
+  onAddDocument?: (file: File, name: string) => Promise<void>
+  onRemoveDocument?: (documentId: number) => Promise<void>
 }
 
 function PrivateDataSection({ contact, isDark, t }: PrivateDataSectionProps) {
@@ -207,7 +213,18 @@ const PrivateContactsList = ({
   )
 }
 
-export const CardTabs = ({ contact, apiContacts, loading, isVisible, onEditContact, onCreateContact }: CardTabsProps) => {
+export const CardTabs = ({ 
+  contact, 
+  apiContacts, 
+  loading, 
+  isVisible, 
+  onEditContact, 
+  onCreateContact,
+  documents = [],
+  documentsLoading = false,
+  onAddDocument,
+  onRemoveDocument
+}: CardTabsProps) => {
   const isDark = useDarkMode()
   const t = useTranslation()
 
@@ -217,7 +234,7 @@ export const CardTabs = ({ contact, apiContacts, loading, isVisible, onEditConta
       isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
     )}>
       <TabsList className={cn(
-        "w-full grid grid-cols-2 p-1",
+        "w-full grid grid-cols-3 p-1",
         isDark ? "bg-slate-800/50" : "bg-slate-100/50"
       )}>
         <TabsTrigger 
@@ -243,6 +260,18 @@ export const CardTabs = ({ contact, apiContacts, loading, isVisible, onEditConta
           <Lock className="h-4 w-4 mr-2" />
           {t("private")}
         </TabsTrigger>
+        <TabsTrigger 
+          value="documents" 
+          className={cn(
+            "transition-all",
+            isDark 
+              ? "data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400" 
+              : "data-[state=active]:bg-white data-[state=active]:text-gray-900 text-gray-600"
+          )}
+        >
+          <FileText className="h-4 w-4 mr-2" />
+          {t("documents") || "Documentos"}
+        </TabsTrigger>
       </TabsList>
 
       <TabsContent value="public" className="mt-4">
@@ -260,6 +289,19 @@ export const CardTabs = ({ contact, apiContacts, loading, isVisible, onEditConta
           <LoadingState isDark={isDark} t={t} />
         ) : (
           <PrivateContactsList apiContacts={apiContacts} contact={contact} onEditContact={onEditContact} onCreateContact={onCreateContact} />
+        )}
+      </TabsContent>
+
+      <TabsContent value="documents" className="mt-4">
+        {onAddDocument && onRemoveDocument ? (
+          <DocumentsList
+            documents={documents}
+            loading={documentsLoading}
+            onAddDocument={onAddDocument}
+            onRemoveDocument={onRemoveDocument}
+          />
+        ) : (
+          <LoadingState isDark={isDark} t={t} />
         )}
       </TabsContent>
     </Tabs>

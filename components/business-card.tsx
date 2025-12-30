@@ -5,6 +5,7 @@ import { useDarkMode } from "@/hooks/use-dark-mode"
 import { cn, copyToClipboard } from "@/lib/utils"
 import { BusinessCardProps } from "@/types/contact"
 import { useContacts } from "@/hooks/use-contacts"
+import { useDocuments } from "@/hooks/use-documents"
 import { updateContact, createContact } from "@/lib/api"
 import { UpdateContactPayload } from "@/types/contact/update-contact"
 import { ApiContact } from "@/types/contact/api-contact"
@@ -27,6 +28,7 @@ export function BusinessCard({ contact }: BusinessCardProps) {
   const [editingContact, setEditingContact] = useState<ApiContact | null>(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const { contacts: apiContacts, loading, refresh } = useContacts()
+  const { documents, loading: documentsLoading, addDocument, removeDocument } = useDocuments()
   const isDark = useDarkMode()
 
   useEffect(() => {
@@ -81,6 +83,14 @@ export function BusinessCard({ contact }: BusinessCardProps) {
     setShowCreateModal(false)
   }
 
+  const handleAddDocument = async (file: File, name: string) => {
+    await addDocument({ file, name })
+  }
+
+  const handleRemoveDocument = async (documentId: number) => {
+    await removeDocument(documentId)
+  }
+
   if (!mounted) {
     return null
   }
@@ -110,6 +120,10 @@ export function BusinessCard({ contact }: BusinessCardProps) {
           isVisible={isVisible}
           onEditContact={handleEditContact}
           onCreateContact={() => setShowCreateModal(true)}
+          documents={documents}
+          documentsLoading={documentsLoading}
+          onAddDocument={handleAddDocument}
+          onRemoveDocument={handleRemoveDocument}
         />
         <CardActions 
           contact={contact} 
